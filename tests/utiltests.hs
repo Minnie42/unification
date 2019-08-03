@@ -38,6 +38,8 @@ applySubstitutionToMeta2 =
 -- applySubstitutionToGamma -------
 -----------------------------------
 
+-- unJust
+
 testUtils = 
 	TestList [
 		TestLabel "applySubstitutionToMeta_test1" applySubstitutionToMeta1

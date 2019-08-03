@@ -21,3 +21,6 @@ applySubstitutionToEquation substitution (side1, side2) =
 
 applySubstitutionToGamma :: (Var, Var) -> Problem -> Problem
 applySubstitutionToGamma substitution gamma = map (applySubstitutionToEquation substitution) gamma
+
+unJust :: (Maybe a) -> a
+unJust (Just value) = value

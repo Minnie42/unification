@@ -1,53 +1,56 @@
-module Rules where
+module Unification where
+import Rules
 import Types
 import Util
 
-rule1 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule1 sol ((BL [B x y], BL [B x' y']):gamma) = Just (sol, ((V x, V x'):(V y, V y'):gamma))
-rule1 sol _ = Nothing
+unification  :: Problem -> Maybe Sol
+unification gamma = recursiveUnification (Just []) gamma 1
 
-rule2 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule2 sol ((V (Concrete x), V (Concrete y)):gamma)
-	| x == y = Just (sol, gamma)
-	| otherwise = Nothing
-rule2 sol _ = Nothing	
-
-rule3 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule3 sol ((V (Concrete x), V (Concrete y)):gamma)
-	| x /= y = error "Fail"
-	| otherwise = Nothing
-rule3 sol _ = Nothing
-
-rule4 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule4 sol ((V (Meta x), V (Concrete y)):gamma) = 
-	Just ((Meta x, Concrete y):sol, applySubstitutionToGamma (Meta x, Concrete y) gamma)
-rule4 sol _ = Nothing
-
-
-rule5 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule5 sol ((V (Meta x), V (Meta y)):gamma) = 
-	Just ((Meta x, Meta y):sol, applySubstitutionToGamma (Meta x, Meta y) gamma)
-rule5 sol _ = Nothing
-
-{-
-rule6 :: Sol -> Problem -> Maybe [(Sol, Problem)]
-rule6 sol ((BL (bind:binds), BL (bind':binds')):gamma) = 
-	Just
-	m = length (bind:binds)
-	k = length (bind':binds')
-rule6 sol _ = Nothing
--}
-
-rule7 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule7 sol ((BL (bind:binds), BL []):gamma) = error "Fail"
-rule7 sol _ = Nothing
-
-rule8 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule8 sol ((BL [], BL (bind:binds)):gamma) = error "Fail"
-rule8 sol _ = Nothing
-
-rule9 :: Sol -> Problem -> Maybe (Sol, Problem)
-rule9 sol ((BL [], BL []):gamma) = Just (sol, gamma)
-rule9 sol _ = Nothing
-
-
+recursiveUnification :: Maybe Sol -> Problem -> Int -> Maybe Sol
+recursiveUnification Nothing _ _ = Nothing
+recursiveUnification sol [] _ = sol
+recursiveUnification sol problem 1
+  | next == Nothing = recursiveUnification sol problem 2
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 2
+  where
+    next = rule1 sol problem
+recursiveUnification sol problem 2
+  | next == Nothing = recursiveUnification sol problem 3
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 3
+  where
+    next = rule2 sol problem
+recursiveUnification sol problem 3
+  | next == Nothing = recursiveUnification sol problem 4
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 4
+  where
+    next = rule3 sol problem
+recursiveUnification sol problem 4
+  | next == Nothing = recursiveUnification sol problem 5
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 5
+  where
+    next = rule4 sol problem
+recursiveUnification sol problem 5
+  | next == Nothing = recursiveUnification sol problem 6
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 6
+  where
+    next = rule5 sol problem
+recursiveUnification sol problem 6
+  | next == Nothing = recursiveUnification sol problem 7
+  | otherwise = recursiveUnification (fst (head (unJust next))) (snd (head (unJust next))) 7
+  where
+    next = rule6 sol problem    
+recursiveUnification sol problem 7
+  | next == Nothing = recursiveUnification sol problem 8
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 8
+  where
+    next = rule7 sol problem
+recursiveUnification sol problem 8
+  | next == Nothing = recursiveUnification sol problem 9
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 9
+  where
+    next = rule8 sol problem
+recursiveUnification sol problem 9
+  | next == Nothing = recursiveUnification sol problem 1
+  | otherwise = recursiveUnification (fst (unJust next)) (snd (unJust next)) 1
+  where
+    next = rule9 sol problem

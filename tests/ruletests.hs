@@ -411,20 +411,28 @@ testsRule9 =
 main = do
   putStrLn "Rule1"
   runTestTT testsRule1
+  putStrLn ""
   putStrLn "Rule2"
   runTestTT testsRule2
+  putStrLn ""
   putStrLn "Rule3"
   runTestTT testsRule3
+  putStrLn ""
   putStrLn "Rule4"
   runTestTT testsRule4
+  putStrLn ""
   putStrLn "Rule5"
   runTestTT testsRule5
+  putStrLn ""
   putStrLn "Rule6"
   runTestTT testsRule6
+  putStrLn ""
   putStrLn "Rule7"
   runTestTT testsRule7
+  putStrLn ""
   putStrLn "Rule8"
   runTestTT testsRule8
+  putStrLn ""
   putStrLn "Rule9"
   runTestTT testsRule9
-  putStrLn "Done"
+  putStrLn ""
