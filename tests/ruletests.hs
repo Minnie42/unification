@@ -207,8 +207,89 @@ twoVariablesMetaAndConcreteRule5 =
 -------------------------------
 -- Rule 6 ---------------------
 -------------------------------
+equationWithTwoListsOfOneBindEachRule6 =
+  TestCase (
+    assertEqual
+      "equation with two lists of one bind each should resolve to the same equation and a equation of two empty binds"
+      (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "Y") (Concrete "y")]), (BL [], BL [])])])
+      (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [
+      (
+        BL [B (Meta "X") (Concrete "x")],
+        BL [B (Meta "Y") (Concrete "y")]
+      )]
 
+equationWithTwoListsOfTwoBindsEachRule6 = 
+  TestCase (
+    assertEqual
+      "equation with two lists of two binds each should resolve ???????? and a equation of two empty binds"
+      (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Meta "Y") (Concrete "z")])]),
+      (sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "Y") (Concrete "z")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Concrete "y") (Concrete "x")])])])
+      (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [
+      (
+        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]),
+        (BL [(B (Concrete "y") (Concrete "x")), (B (Meta "Y") (Concrete "z"))])
+      )]
 
+equationWithTwoListOfBindsOneEmptyRule6 =
+  TestCase (
+    assertEqual
+      "????????????" --TODO: comment
+      Nothing
+      (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [((BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]), BL [])]
+
+equationOfTwoListOfBindsSecondLongerRule6 =
+  TestCase (
+    assertEqual
+    "?????????" --TODO: comment
+    (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [])])])
+    (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [
+      (
+        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]),
+        (BL [(B (Concrete "y") (Concrete "x"))])
+      )]
+
+equationOfTwoListOfBindsFirstLongerRule6 =
+  TestCase (
+    assertEqual
+    "??????????????" --TODO: comment
+    (Just [(sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "X") (Concrete "x")])), ((BL []), (BL [B (Meta "Y") (Concrete "y")]))]),
+    (sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")])), ((BL []), (BL [B (Meta "X") (Concrete "x")]))])])
+    (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [
+      (
+        (BL [(B (Concrete "y") (Concrete "x"))]),
+        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))])
+      )]
+
+equationWithOneListOfBindsAndOneVariableRule6 =
+  TestCase (
+    assertEqual
+      "????????????" --TODO: comment
+      Nothing
+      (rule6 sol problem)
+  )
+  where
+    sol = Just []
+    problem = [((BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]), V (Concrete "x"))]
 
 -------------------------------
 -- Rule 7 ---------------------
@@ -382,7 +463,12 @@ testsRule5 =
 
 testsRule6 = 
   TestList [
-
+    TestLabel "rule6_test1" equationWithTwoListsOfOneBindEachRule6
+    , TestLabel "rule6_test2" equationWithTwoListsOfTwoBindsEachRule6
+    , TestLabel "rule6_test3" equationWithTwoListOfBindsOneEmptyRule6
+    , TestLabel "rule6_test4" equationOfTwoListOfBindsSecondLongerRule6
+    , TestLabel "rule6_test5" equationOfTwoListOfBindsFirstLongerRule6
+    , TestLabel "rule6_test6" equationWithOneListOfBindsAndOneVariableRule6
   ]
 
 testsRule7 = 
