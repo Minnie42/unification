@@ -1,6 +1,5 @@
 import Test.HUnit
 import Types
-import Rules
 import Util
 
 -----------------------------------
@@ -81,7 +80,7 @@ applySubstitutionToBind2 =
 applySubstitutionToSide1 =
   TestCase (
     assertEqual
-      "?????" --TODO: comment
+      "?" --TODO: comment
       (BL [B (Concrete "y") (Meta "Y")])
       (applySubstitutionToSide sub side)
   )
@@ -92,7 +91,7 @@ applySubstitutionToSide1 =
 applySubstitutionToSide2 =
   TestCase (
     assertEqual
-      "?????" --TODO: comment
+      "?" --TODO: comment
       (BL [B (Meta "Y") (Concrete "y")])
       (applySubstitutionToSide sub side)
   )
@@ -103,7 +102,7 @@ applySubstitutionToSide2 =
 applySubstitutionToSide3 =
   TestCase (
     assertEqual
-      "?????" --TODO: comment
+      "?" --TODO: comment
       (BL [B (Concrete "y") (Concrete "x")])
       (applySubstitutionToSide sub side)
   )

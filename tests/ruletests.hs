@@ -225,7 +225,7 @@ equationWithTwoListsOfOneBindEachRule6 =
 equationWithTwoListsOfTwoBindsEachRule6 = 
   TestCase (
     assertEqual
-      "equation with two lists of two binds each should resolve ???????? and a equation of two empty binds"
+      "equation with two lists of two binds each should resolve ? and a equation of two empty binds" --TODO
       (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Meta "Y") (Concrete "z")])]),
       (sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "Y") (Concrete "z")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Concrete "y") (Concrete "x")])])])
       (rule6 sol problem)
@@ -241,7 +241,7 @@ equationWithTwoListsOfTwoBindsEachRule6 =
 equationWithTwoListOfBindsOneEmptyRule6 =
   TestCase (
     assertEqual
-      "????????????" --TODO: comment
+      "?" --TODO: comment
       Nothing
       (rule6 sol problem)
   )
@@ -252,7 +252,7 @@ equationWithTwoListOfBindsOneEmptyRule6 =
 equationOfTwoListOfBindsSecondLongerRule6 =
   TestCase (
     assertEqual
-    "?????????" --TODO: comment
+    "?" --TODO: comment
     (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [])])])
     (rule6 sol problem)
   )
@@ -267,7 +267,7 @@ equationOfTwoListOfBindsSecondLongerRule6 =
 equationOfTwoListOfBindsFirstLongerRule6 =
   TestCase (
     assertEqual
-    "??????????????" --TODO: comment
+    "?" --TODO: comment
     (Just [(sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "X") (Concrete "x")])), ((BL []), (BL [B (Meta "Y") (Concrete "y")]))]),
     (sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")])), ((BL []), (BL [B (Meta "X") (Concrete "x")]))])])
     (rule6 sol problem)
@@ -283,7 +283,7 @@ equationOfTwoListOfBindsFirstLongerRule6 =
 equationWithOneListOfBindsAndOneVariableRule6 =
   TestCase (
     assertEqual
-      "????????????" --TODO: comment
+      "?" --TODO: comment
       Nothing
       (rule6 sol problem)
   )
