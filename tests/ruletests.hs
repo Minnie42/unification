@@ -2,41 +2,105 @@ import Test.HUnit
 import Types
 import Rules
 
+testVar :: Var
+testVar = Meta "Var"
+
+testVarX :: Var
+testVarX = Meta "VarX"
+
+testVarY :: Var
+testVarY = Meta "VarY"
+
+testBind :: Bind
+testBind = B testVar testVar
+
+testGamma :: Problem
+testGamma = []
+
+testSol :: Maybe Sol
+testSol = Just []
+
 -------------------------------
 -- Rule 1 ---------------------
 -------------------------------
-equationWithTwoBindsRule1 =
+rule1EquationEachSideBindOfSizeOne =
   TestCase (
     assertEqual
-      "equation with two binds should be resolved to two equation with two variables each"
-      (Just (sol, [(V (Meta "X"), V (Meta "X")), (V (Concrete "x"), V (Concrete "x"))]))
-      (rule1 sol problem)
+      "An equation with a bind of size one on each side should combine the first variable\
+      \of the left bind with the first variable of the right bind and the second variable of\
+      \the right bind with the second variable of the left bind."
+      (Just 
+        (
+          testSol
+        , (V testVarX, V testVarX):(V testVarY, V testVarY):testGamma
+        ) 
+      )
+      (
+        rule1 
+          testSol 
+          ((BL [B testVarX testVarY], BL [B testVarX testVarY]):testGamma)
+        )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "X") (Concrete "x")])]
 
-equationWithOneBindAndAVariableRule1 = 
+rule1EquationWithBindOfSizeTwoOnRightSide =
   TestCase (
-    assertEqual
-      "equation with one bind and one variable should be resolved in Nothing"
-      Nothing
-      (rule1 sol problem)
+  assertEqual
+    "An equation with a bind of size greater then one on the right side should resolve to nothing."
+    Nothing
+    (
+      rule1 
+        testSol 
+        ((BL [testBind], BL [testBind, testBind]):testGamma)
+    )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "X") (Concrete "x")], V (Meta "X"))]
 
-twoEmptyBindsRule1 =
+rule1EquationWithBindOfSizeZeroOnTheRightSide =
   TestCase (
-    assertEqual
-      "equation with two empty binds should resolved to Nothing" 
-      Nothing
-      (rule1 sol problem)
+  assertEqual
+    "An equation with a bind of size zero on the right side should resolve to nothing."
+    Nothing
+    (
+      rule1 
+        testSol 
+        ((BL [testBind], BL []):testGamma)
+    )
   )
-  where
-    sol = Just []
-    problem = [(BL [], BL [])]
+  
+rule1EquationWithBindOfSizeTwoOnLeftSide =
+  TestCase (
+  assertEqual
+    "An equation with a bind of size greater then one on the left side should resolve to nothing."
+    Nothing
+    (
+      rule1 
+        testSol 
+        ((BL [testBind, testBind], BL [testBind]):testGamma)
+    )
+  )
+
+rule1EquationWithBindOfSizeZeroOnTheLeftSide =
+  TestCase (
+  assertEqual
+    "An equation with a bind of size zero on the left side should resolve to nothing."
+    Nothing
+    (
+      rule1 
+        testSol 
+        ((BL [], BL [testBind]):testGamma)
+    )
+  )  
+  
+rule1EquationWithVarOnEachSide =
+  TestCase (
+  assertEqual
+    "An equation with a variable on each side should resolve to nothing."
+    Nothing
+    (
+      rule1 
+        testSol 
+        ((V testVar, V testVar):testGamma)
+    )
+  )    
 
 -------------------------------
 -- Rule 2 ---------------------
@@ -426,9 +490,12 @@ equationWithTwoBindsRule9 =
 -------------------------------
 testsRule1 = 
   TestList [
-    TestLabel "rule1_test1" equationWithTwoBindsRule1
-    , TestLabel "rule1_test2" equationWithOneBindAndAVariableRule1
-    , TestLabel "rule1_test3" twoEmptyBindsRule1
+    TestLabel "rule1_test1" rule1EquationEachSideBindOfSizeOne
+    , TestLabel "rule1_test2" rule1EquationWithBindOfSizeTwoOnRightSide
+    , TestLabel "rule1_test3" rule1EquationWithBindOfSizeZeroOnTheRightSide
+    , TestLabel "rule1_test4" rule1EquationWithBindOfSizeTwoOnLeftSide
+    , TestLabel "rule1_test5" rule1EquationWithBindOfSizeZeroOnTheLeftSide
+    , TestLabel "rule1_test6" rule1EquationWithVarOnEachSide
   ]
 
 testsRule2 = 

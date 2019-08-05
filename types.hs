@@ -1,4 +1,4 @@
- module Types where
+module Types where
 
 data Bind = B Var Var deriving(Show, Eq)
 data Var = Concrete String | Meta String deriving(Show, Eq)
