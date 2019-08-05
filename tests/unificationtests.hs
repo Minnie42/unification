@@ -5,48 +5,48 @@ import Unification
 unificationTest1 =
   TestCase (
     assertEqual
-      "?" --TODO
-      (Just [])
+      "two identical concretes should be removed"
+      [[]]
       (unification [(V (Concrete "x"), V (Concrete "x"))])
   )  
-  
+ 
 unificationTest2 =
   TestCase (
     assertEqual
-      "?" --TODO
-      Nothing
+      "an equation with two different concretes should resolve to Nothing"
+      []
       (unification [(V (Concrete "x"), V (Concrete "y"))])
   )
-
+ 
 unificationTest3 =
   TestCase (
     assertEqual
-      "?" --TODO
-      (Just [(Meta "X", Concrete "y")])
+      "an equation with one meta and one concrete variable should resolve to a map? with these two" --TODO
+      [[(Meta "X", Concrete "y")]]
       (unification [(V (Meta "X"), V (Concrete "y"))])
   )
 
 unificationTest4 =
   TestCase (
     assertEqual
-      "?" --TODO
-      Nothing
+      "to binds one empty should resolve to Nothing"
+      []
       (unification [(BL [B (Concrete "x") (Meta "X")], BL [])])
   ) 
   
 unificationTest5 =
   TestCase (
     assertEqual
-      "?" --TODO
-      Nothing
+      "to binds one empty should resolve to Nothing"
+      []
       (unification [(BL [], BL [B (Concrete "x") (Meta "X")])])
   )
 
 unificationTest6 =
   TestCase (
     assertEqual
-      "?" --TODO
-      (Just [(Meta "Y", Concrete "z"), (Meta "X", Concrete "y")])
+      "two equations with each a meta and a concrete variable should resolve to a list of tupel with these ?" --TODO
+      [[(Meta "Y", Concrete "z"), (Meta "X", Concrete "y")]]
       (unification [(V (Meta "X"), V (Concrete "y")), (V (Meta "Y"), V (Concrete "z"))])
   )
 

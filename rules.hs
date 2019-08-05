@@ -29,8 +29,10 @@ rule5 (Just sol) ((V (Meta x), V (Meta y)):gamma) =
 rule5 sol _ = Nothing
 
 rule6 :: Maybe Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
-rule6 sol ((BL (leftBind:leftBinds), BL (rightBind:rightBinds)):gamma) = 
-  Just (rule6Iterate (leftBind:leftBinds) [] rightBind rightBinds sol gamma)
+rule6 sol ((BL (leftBind1:leftBind2:leftBinds), BL (rightBind:rightBinds)):gamma) = 
+  Just (rule6Iterate (leftBind1:leftBind2:leftBinds) [] rightBind rightBinds sol gamma)
+rule6 sol ((BL (leftBind:leftBinds), BL (rightBind1:rightBind2:rightBinds)):gamma) = 
+  Just (rule6Iterate (leftBind:leftBinds) [] rightBind1 (rightBind2:rightBinds) sol gamma)
 rule6 sol _ = Nothing
 
 rule6Iterate :: [Bind] -> [Bind] -> Bind -> [Bind] -> Maybe Sol -> Problem -> [(Maybe Sol, Problem)]

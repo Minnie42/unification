@@ -211,7 +211,7 @@ equationWithTwoListsOfOneBindEachRule6 =
   TestCase (
     assertEqual
       "equation with two lists of one bind each should resolve to the same equation and a equation of two empty binds"
-      (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "Y") (Concrete "y")]), (BL [], BL [])])])
+      Nothing      
       (rule6 sol problem)
   )
   where
