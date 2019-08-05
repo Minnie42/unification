@@ -11,6 +11,24 @@ testVarX = Meta "VarX"
 testVarY :: Var
 testVarY = Meta "VarY"
 
+testConcrete :: Var
+testConcrete = Concrete "Concrete"
+
+testMeta:: Var
+testMeta = Meta "Meta"
+
+testConcreteX :: Var
+testConcreteX = Concrete "ConcreteX"
+
+testConcreteY :: Var
+testConcreteY = Concrete "ConcreteY"
+
+testMetaX :: Var
+testMetaX = Meta "MetaX"
+
+testMetaY :: Var
+testMetaY = Meta "MetaY"
+
 testBind :: Bind
 testBind = B testVar testVar
 
@@ -44,446 +62,510 @@ rule1EquationEachSideBindOfSizeOne =
 
 rule1EquationWithBindOfSizeTwoOnRightSide =
   TestCase (
-  assertEqual
-    "An equation with a bind of size greater then one on the right side should resolve to nothing."
-    Nothing
-    (
-      rule1 
-        testSol 
-        ((BL [testBind], BL [testBind, testBind]):testGamma)
-    )
+    assertEqual
+      "An equation with a bind of size greater then one on the right side should resolve to nothing."
+      Nothing
+      (
+        rule1 
+          testSol 
+          ((BL [testBind], BL [testBind, testBind]):testGamma)
+      )
   )
 
 rule1EquationWithBindOfSizeZeroOnTheRightSide =
   TestCase (
-  assertEqual
-    "An equation with a bind of size zero on the right side should resolve to nothing."
-    Nothing
-    (
-      rule1 
-        testSol 
-        ((BL [testBind], BL []):testGamma)
-    )
+    assertEqual
+      "An equation with a bind of size zero on the right side should resolve to nothing."
+      Nothing
+      (
+        rule1 
+          testSol 
+          ((BL [testBind], BL []):testGamma)
+      )
   )
   
 rule1EquationWithBindOfSizeTwoOnLeftSide =
   TestCase (
-  assertEqual
-    "An equation with a bind of size greater then one on the left side should resolve to nothing."
-    Nothing
-    (
-      rule1 
-        testSol 
-        ((BL [testBind, testBind], BL [testBind]):testGamma)
-    )
+    assertEqual
+      "An equation with a bind of size greater then one on the left side should resolve to nothing."
+      Nothing
+      (
+        rule1 
+          testSol 
+          ((BL [testBind, testBind], BL [testBind]):testGamma)
+      )
   )
 
 rule1EquationWithBindOfSizeZeroOnTheLeftSide =
   TestCase (
-  assertEqual
-    "An equation with a bind of size zero on the left side should resolve to nothing."
-    Nothing
-    (
-      rule1 
-        testSol 
-        ((BL [], BL [testBind]):testGamma)
-    )
+    assertEqual
+      "An equation with a bind of size zero on the left side should resolve to nothing."
+      Nothing
+      (
+        rule1 
+          testSol 
+          ((BL [], BL [testBind]):testGamma)
+      )
   )  
   
 rule1EquationWithVarOnEachSide =
   TestCase (
-  assertEqual
-    "An equation with a variable on each side should resolve to nothing."
-    Nothing
-    (
-      rule1 
-        testSol 
-        ((V testVar, V testVar):testGamma)
-    )
+    assertEqual
+      "An equation with a variable on each side should resolve to nothing."
+      Nothing
+      (
+        rule1 
+          testSol 
+          ((V testVar, V testVar):testGamma)
+      )
   )    
 
 -------------------------------
 -- Rule 2 ---------------------
--------------------------------	
-twoSameConcretesRule2 = 
+-------------------------------
+rule2EquationWithTwoIdenticalConcretes =
   TestCase (
     assertEqual
-      "two identical concretes should be removed"
-      (Just (sol, []))
-      (rule2 sol problem)
+      "An equation with two identical concretes should be removed."
+      (Just (testSol, testGamma))
+      (
+        rule2 
+          testSol 
+          ((V testConcreteX, V testConcreteX):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Concrete "x"), V (Concrete "x"))]
 
-twoVariablesMetaAndConcreteRule2 = 
+rule2EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
-      "anything then a concrete should resolve to Nothing"
-      Nothing
-      (rule2 sol problem)
+      "An equation with two identical metas should be removed."
+      (Just (testSol, testGamma))
+      (
+        rule2 
+          testSol 
+          ((V testMetaX, V testMetaX):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x"))]
 
-twoinputsBindAndSomethingRule2 = 
+rule2EquationWithTwoDifferentConcretes =
   TestCase (
     assertEqual
-      "anything then a concrete should resolve to Nothing"
+      "An equation with two different concretes should resolve to nothing.."
       Nothing
-      (rule2 sol problem)
+      (
+        rule2 
+          testSol 
+          ((V testConcreteX, V testConcreteY):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "X") (Concrete "x")], V (Meta "X"))]
+
+rule2EquationWithTwoDifferentMetas =
+  TestCase (
+    assertEqual
+      "An equation with two different metas should be removed."
+      Nothing
+      (
+        rule2 
+          testSol 
+          ((V testMetaX, V testMetaY):testGamma)
+      )
+  )
+
+rule2EquationWithMetaOnTheLeftAndConcreteOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a meta variable on the left and a concrete variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule2 
+          testSol 
+          ((V testMeta, V testConcrete):testGamma)
+      )
+  )
+
+rule2EquationWithConcreteOnTheLeftAndMetaOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a concrete variable on the left and a meta variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule2 
+          testSol 
+          ((V testConcrete, V testMeta):testGamma)
+      )
+  )
+
+rule2EquationWithTwoBinds =
+  TestCase (
+    assertEqual
+      "An equation with two binds should resolve to nothing."
+      Nothing
+      (
+        rule2 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
 
 -------------------------------
 -- Rule 3 ---------------------
 -------------------------------
-twoDifferentConcretesRule3 = 
+rule3EquationWithTwoDifferentConcretes =
   TestCase (
     assertEqual
-      "two different concretes should resolve to an error"
-      (Just (Nothing, problem))
-      (rule3 sol problem)
+      "An equation with two different concrete variables should transform the current solution to nothing."
+      (
+        Just (
+          Nothing
+        , ((V testConcreteX, V testConcreteY):testGamma)
+        )
+      )
+      (
+        rule3 
+          testSol 
+          ((V testConcreteX, V testConcreteY):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Concrete "x"), V (Concrete "y"))]
   
-twoVariablesMetaAndConcreteRule3 = 
+rule3EquationWithTwoIdenticalConcretes =
   TestCase (
     assertEqual
-      "anything then a concrete should resolve in Nothing"
+      "An equation with two identical concrete variables should resolve to nothing."
       Nothing
-      (rule3 sol problem)
+      (
+        rule3 
+          testSol 
+          ((V testConcreteX, V testConcreteX):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x"))]
-
-twoinputsBindAndSomethingRule3 = 
+  
+rule3EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
-      "anything then a concrete should resolve in Nothing"
+      "An equation with two identical meta variables should resolve to nothing."
       Nothing
-      (rule3 sol problem)
+      (
+        rule3 
+          testSol 
+          ((V testMetaX, V testMetaX):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "X") (Concrete "x")], V (Meta "X"))]
 
+rule3EquationWithTwoDifferentMetas =
+  TestCase (
+    assertEqual
+      "An equation with two different meta variables should resolve to nothing."
+      Nothing
+      (
+        rule3 
+          testSol 
+          ((V testMetaX, V testMetaY):testGamma)
+      )
+  )
+
+rule3EquationWithTwoBinds =
+  TestCase (
+    assertEqual
+      "An equation with two binds should resolve to nothing."
+      Nothing
+      (
+        rule3 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
+
+rule3EquationWithConcreteOnTheLeftAndMetaOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a concrete variable on the left and a meta variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule3 
+          testSol 
+          ((V testConcrete, V testMeta):testGamma)
+      )
+  )
+
+rule3EquationWithMetaOnTheLeftAndConcreteOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a meta variable on the left and a concrete variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule3 
+          testSol 
+          ((V testMeta, V testConcrete):testGamma)
+      )
+  )
 -------------------------------
 -- Rule 4 ---------------------
--------------------------------	
-twoVariablesMetaAndConcreteRule4 =
+-------------------------------
+rule4EquationWithTwoMetas =
   TestCase (
     assertEqual
-      "the meta variable should be substituted with the concrete variable"
-      (Just (Just [(Meta "X",Concrete "x")], [(V (Concrete "x"), V (Concrete "x"))]))
-      (rule4 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x"))]
-
-twoBindsWithTwoVariablesMetaAndConcreteRule4 =
-  TestCase (
-    assertEqual
-      "the meta variable should be substituted with the concrete variable and again with the next concrete variable"
-      (Just (Just [(Meta "X", Concrete "x")], [(V (Concrete "x"), V (Concrete "x")), (V (Concrete "x"), V (Concrete "y"))]))
-      (rule4 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x")), (V (Meta "X"), V (Concrete "y"))]
-
-twoVariablesConcreteAndMetaRule4 =
-  TestCase (
-    assertEqual
-      "?"--TODO
-      (Just (Just [(Meta "X",Concrete "x")], [(V (Concrete "x"), V (Concrete "x"))]))
-      (rule4 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(V (Concrete "x"), V (Meta "X"))]
-
-twoMetaVariablesRule4 =
-  TestCase (
-    assertEqual
-      "anything then a meta and a concrete variable should resolve to Nothing"
+      "An equation with two meta variables should resolve to nothing."
       Nothing
-      (rule4 sol problem)
+      (
+        rule4 
+          testSol 
+          ((V testMeta, V testMeta):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Meta "Y"))]
 
+rule4EquationWithTwoConcretes =
+  TestCase (
+    assertEqual
+      "An equation with two concrete variables should resolve to nothing."
+      Nothing
+      (
+        rule4 
+          testSol 
+          ((V testConcrete, V testConcrete):testGamma)
+      )
+  )
+
+rule4EquationWithTwoBinds =
+  TestCase (
+    assertEqual
+      "An equation with two binds should resolve to nothing."
+      Nothing
+      (
+        rule4 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
 -------------------------------
 -- Rule 5 ---------------------
 -------------------------------
-twoMetaVariablesRule5 =
+rule5EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
-      "the first meta variable should be substituted with the second meta variable"
-      (Just (Just [(Meta "X",Meta "Y")], [(V (Meta "Y"), V (Meta "Y"))]))
-      (rule5 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Meta "Y"))]
-
-twoBindsWithTwoMetaVariablesRule5 =
-  TestCase (
-    assertEqual
-      "the first meta variable should be substituted with the other meta variable and again with the next meta variable"
-      (Just (Just [(Meta "X", Meta "Y")], [(V (Meta "Y"), V (Meta "Y")), (V (Meta "Y"), V (Meta "Z"))]))
-      (rule5 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Meta "Y")), (V (Meta "X"), V (Meta "Z"))]
-
-twoVariablesConcreteAndMetaRule5 =
-  TestCase (
-    assertEqual
-      "anything then two meta variables should resolve to Nothing"
+      "An equation with two identical meta variables should resolve to nothing."
       Nothing
-      (rule5 sol problem)
+      (
+        rule5 
+          testSol 
+          ((V testMeta, V testMeta):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Concrete "x"), V (Meta "X"))]
-
-twoVariablesMetaAndConcreteRule5 =
+  
+rule5EquationWithTwoIdenticalConcretes =
   TestCase (
     assertEqual
-      "anything then two meta variables should resolve to Nothing"
+      "An equation with two identical concrete variables should resolve to nothing."
       Nothing
-      (rule5 sol problem)
+      (
+        rule5 
+          testSol 
+          ((V testConcrete, V testConcrete):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x"))]
+  
+rule5EquationWithTwoDifferentConcretes =
+  TestCase (
+    assertEqual
+      "An equation with two different concrete variables should resolve to nothing."
+      Nothing
+      (
+        rule5 
+          testSol 
+          ((V testConcreteX, V testConcreteY):testGamma)
+      )
+  )
 
+rule5EquationWithTwoBinds =
+  TestCase (
+    assertEqual
+      "An equation with two binds should resolve to nothing."
+      Nothing
+      (
+        rule5 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
+
+rule5EquationWithConcreteOnTheLeftAndMetaOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a concrete variable on the left and a meta variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule5 
+          testSol 
+          ((V testConcrete, V testMeta):testGamma)
+      )
+  )
+
+rule5EquationWithMetaOnTheLeftAndConcreteOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with a meta variable on the left and a concrete variable on the right should resolve to nothing."
+      Nothing
+      (
+        rule5
+          testSol 
+          ((V testMeta, V testConcrete):testGamma)
+      )
+  )
 -------------------------------
 -- Rule 6 ---------------------
 -------------------------------
-equationWithTwoListsOfOneBindEachRule6 =
-  TestCase (
-    assertEqual
-      "equation with two lists of one bind each should resolve to the same equation and a equation of two empty binds"
-      Nothing      
-      (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [
-      (
-        BL [B (Meta "X") (Concrete "x")],
-        BL [B (Meta "Y") (Concrete "y")]
-      )]
-
-equationWithTwoListsOfTwoBindsEachRule6 = 
-  TestCase (
-    assertEqual
-      "equation with two lists of two binds each should resolve ? and a equation of two empty binds" --TODO
-      (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Meta "Y") (Concrete "z")])]),
-      (sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Meta "Y") (Concrete "z")]), (BL [B (Meta "Y") (Concrete "y")], BL [B (Concrete "y") (Concrete "x")])])])
-      (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [
-      (
-        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]),
-        (BL [(B (Concrete "y") (Concrete "x")), (B (Meta "Y") (Concrete "z"))])
-      )]
-
-equationWithTwoListOfBindsOneEmptyRule6 =
-  TestCase (
-    assertEqual
-      "?" --TODO: comment
-      Nothing
-      (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [((BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]), BL [])]
-
-equationOfTwoListOfBindsSecondLongerRule6 =
-  TestCase (
-    assertEqual
-    "?" --TODO: comment
-    (Just [(sol, [(BL [B (Meta "X") (Concrete "x")], BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")], BL [])])])
-    (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [
-      (
-        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]),
-        (BL [(B (Concrete "y") (Concrete "x"))])
-      )]
-
-equationOfTwoListOfBindsFirstLongerRule6 =
-  TestCase (
-    assertEqual
-    "?" --TODO: comment
-    (Just [(sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "X") (Concrete "x")])), ((BL []), (BL [B (Meta "Y") (Concrete "y")]))]),
-    (sol, [((BL [B (Concrete "y") (Concrete "x")]), (BL [B (Meta "Y") (Concrete "y")])), ((BL []), (BL [B (Meta "X") (Concrete "x")]))])])
-    (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [
-      (
-        (BL [(B (Concrete "y") (Concrete "x"))]),
-        (BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))])
-      )]
-
-equationWithOneListOfBindsAndOneVariableRule6 =
-  TestCase (
-    assertEqual
-      "?" --TODO: comment
-      Nothing
-      (rule6 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [((BL [(B (Meta "X") (Concrete "x")), (B (Meta "Y") (Concrete "y"))]), V (Concrete "x"))]
 
 -------------------------------
 -- Rule 7 ---------------------
 -------------------------------
-equationWithOneEmptyBindRule7 = 
+rule7EquationWithBindOfSizeZeroOnTheLeftSide =
   TestCase (
     assertEqual
-      "equation with one list of binds and one empty bind should resolve to an error"
-      (Just (Nothing, problem))
-      (rule7 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(BL ((B (Meta "X") (Concrete "x")):(B (Meta "Y") (Concrete "y")):(B (Meta "Z") (Concrete "z")):[]), BL [])]
-
-equationWithOneEmptyBindOtherSideRule7 = 
-  TestCase (
-    assertEqual
-      "equation with one empty bind on the right and one list of binds should resolve to Nothing"
+      "An equation with a bind of size zero on the left side should resolve to nothing."
       Nothing
-      (rule7 sol problem)
+      (
+        rule7 
+          testSol 
+          ((BL [], BL [testBind]):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [], BL ((B (Meta "X") (Concrete "x")):(B (Meta "Y") (Concrete "y")):(B (Meta "Z") (Concrete "z")):[]))]
 
-equationWithtwoEmptyBindsRule7 =
+rule7EquationWithTwoBindsOfSizeZero =
   TestCase (
     assertEqual
-      "equation with two empty binds should resolved to Nothing" 
+      "An equation with two binds of size zero should resolve to nothing."
       Nothing
-      (rule7 sol problem)
+      (
+        rule7 
+          testSol 
+          ((BL [], BL []):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [], BL [])]
 
-equationWithTwoBindsRule7 =
+rule7EquationWithTwoBinds =
   TestCase (
     assertEqual
-      "equation with two binds should resolved to Nothing" 
+      "An equation with two binds should resolve to nothing."
       Nothing
-      (rule7 sol problem)
+      (
+        rule7 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "Y") (Concrete "y")], BL [B (Meta "X") (Concrete "x")])]
+
+rule7EquationWithVarOnEachSide =
+  TestCase (
+    assertEqual
+      "An equation with a variable on each side should resolve to nothing."
+      Nothing
+      (
+        rule7 
+          testSol 
+          ((V testVar, V testVar):testGamma)
+      )
+  )
 
 -------------------------------
 -- Rule 8 ---------------------
 -------------------------------
-equationWithOneEmptyBindRule8 = 
+rule8EquationWithBindOfSizeZeroOnTheRightSide =
   TestCase (
     assertEqual
-      "equation with one empty bind and one list of binds should resolve to an error"
-      (Just (Nothing, problem))
-      (rule8 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(BL [], BL ((B (Meta "X") (Concrete "x")):(B (Meta "Y") (Concrete "y")):(B (Meta "Z") (Concrete "z")):[]))]
-
-equationWithOneEmptyBindOtherSideRule8 = 
-  TestCase (
-    assertEqual
-      "equation with one list of binds and one empty bind on the left should resolve to Nothing"
+      "An equation with a bind of size zero on the right side should resolve to nothing."
       Nothing
-      (rule8 sol problem)
+      (
+        rule8 
+          testSol 
+          ((BL [testBind], BL []):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL ((B (Meta "X") (Concrete "x")):(B (Meta "Y") (Concrete "y")):(B (Meta "Z") (Concrete "z")):[]), BL [])]
 
-equationWithtwoEmptyBindsRule8 =
+rule8EquationWithTwoBindsOfSizeZero =
   TestCase (
     assertEqual
-      "equation with two empty binds should resolved to Nothing" 
+      "An equation with two binds of size zero should resolve to nothing."
       Nothing
-      (rule8 sol problem)
+      (
+        rule8 
+          testSol 
+          ((BL [], BL []):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [], BL [])]
 
-equationWithTwoBindsRule8 =
+rule8EquationWithTwoBinds =
   TestCase (
     assertEqual
-      "equation with two binds should resolved to Nothing" 
+      "An equation with two binds should resolve to nothing."
       Nothing
-      (rule8 sol problem)
+      (
+        rule8 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "Y") (Concrete "y")], BL [B (Meta "X") (Concrete "x")])]
+
+rule8EquationWithVarOnEachSide =
+  TestCase (
+    assertEqual
+      "An equation with a variable on each side should resolve to nothing."
+      Nothing
+      (
+        rule8 
+          testSol 
+          ((V testVar, V testVar):testGamma)
+      )
+  )
 
 -------------------------------
 -- Rule 9 ---------------------
 -------------------------------
-equationWithTwoEmptyBindsRule9 =
+rule9EquationWithBindOfSizeZeroOnTheLeftSide =
   TestCase (
     assertEqual
-      "equation with two empty binds should resolved to two empty lists"
-      (Just (sol, []))
-      (rule9 sol problem)
-  )
-  where
-    sol = Just []
-    problem = [(BL [], BL [])]
-
-equationWithOneBindAndAVariableRule9 = 
-  TestCase (
-    assertEqual
-      "equation with one bind and one variable should resolve in Nothing"
+      "An equation with a bind of size zero on the left side should resolve to nothing."
       Nothing
-      (rule1 sol problem)
+      (
+        rule9
+          testSol 
+          ((BL [], BL [testBind]):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(BL [B (Meta "X") (Concrete "x")], V (Meta "X"))]
 
-equationWithTwoBindsRule9 =
+rule9EquationWithBindOfSizeZeroOnTheRightSide =
   TestCase (
     assertEqual
-      "equation with two non empty binds should resolve in Nothing"
+      "An equation with a bind of size zero on the right side should resolve to nothing."
       Nothing
-      (rule1 sol problem)
+      (
+        rule9 
+          testSol 
+          ((BL [testBind], BL []):testGamma)
+      )
   )
-  where
-    sol = Just []
-    problem = [(V (Meta "X"), V (Concrete "x"))]
+
+rule9EquationWithTwoBinds =
+  TestCase (
+    assertEqual
+      "An equation with two binds should resolve to nothing."
+      Nothing
+      (
+        rule9 
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
+
+rule9EquationWithVarOnEachSide =
+  TestCase (
+    assertEqual
+      "An equation with a variable on each side should resolve to nothing."
+      Nothing
+      (
+        rule9 
+          testSol 
+          ((V testVar, V testVar):testGamma)
+      )
+  )
 
 -------------------------------
 -- Tests ----------------------
@@ -500,34 +582,47 @@ testsRule1 =
 
 testsRule2 = 
   TestList [
-    TestLabel "rule2_test1" twoSameConcretesRule2
-    , TestLabel "rule2_test2" twoVariablesMetaAndConcreteRule2
-    , TestLabel "rule2_test3" twoinputsBindAndSomethingRule2
+    TestLabel "rule2_test1" rule2EquationWithTwoIdenticalConcretes
+    , TestLabel "rule2_test2" rule2EquationWithTwoIdenticalMetas
+    , TestLabel "rule2_test3" rule2EquationWithTwoDifferentConcretes
+    , TestLabel "rule2_test4" rule2EquationWithTwoDifferentMetas
+    , TestLabel "rule2_test5" rule2EquationWithMetaOnTheLeftAndConcreteOnTheRight
+    , TestLabel "rule2_test6" rule2EquationWithConcreteOnTheLeftAndMetaOnTheRight
+    , TestLabel "rule2_test7" rule2EquationWithTwoBinds
   ]
 
 testsRule3 = 
   TestList [
-    TestLabel "rule3_test1" twoDifferentConcretesRule3
-    , TestLabel "rule3_test2" twoVariablesMetaAndConcreteRule3
-    , TestLabel "rule3_test3" twoinputsBindAndSomethingRule3
+    TestLabel "rule3_test1" rule3EquationWithTwoDifferentConcretes
+    , TestLabel "rule3_test2" rule3EquationWithTwoIdenticalConcretes
+    , TestLabel "rule3_test3" rule3EquationWithTwoIdenticalMetas
+    , TestLabel "rule3_test4" rule3EquationWithTwoDifferentMetas
+    , TestLabel "rule3_test5" rule3EquationWithTwoBinds
+    , TestLabel "rule3_test6" rule3EquationWithConcreteOnTheLeftAndMetaOnTheRight
+    , TestLabel "rule3_test7" rule3EquationWithMetaOnTheLeftAndConcreteOnTheRight
+    
   ]
 
 testsRule4 = 
   TestList [
-    TestLabel "rule4_test1" twoVariablesMetaAndConcreteRule4
-    , TestLabel "rule4_test2" twoBindsWithTwoVariablesMetaAndConcreteRule4
-    , TestLabel "rule4_test3" twoVariablesConcreteAndMetaRule4
-    , TestLabel "rule4_test4" twoMetaVariablesRule4
+    --TestLabel "rule4_test1" twoVariablesMetaAndConcreteRule4
+    --, TestLabel "rule4_test2" twoMetaVariablesRule4
+     TestLabel "rule4_test3" rule4EquationWithTwoMetas
+    , TestLabel "rule4_test4" rule4EquationWithTwoConcretes
+    , TestLabel "rule4_test5" rule4EquationWithTwoBinds
+    
   ]
 
 testsRule5 = 
   TestList [
-    TestLabel "rule5_test1" twoMetaVariablesRule5
-    , TestLabel "rule5_test2" twoBindsWithTwoMetaVariablesRule5
-    , TestLabel "rule5_test2" twoVariablesConcreteAndMetaRule5
-    , TestLabel "rule5_test4" twoVariablesMetaAndConcreteRule5
+    TestLabel "rule5_test2" rule5EquationWithTwoIdenticalMetas
+    , TestLabel "rule5_test3" rule5EquationWithTwoIdenticalConcretes
+    , TestLabel "rule5_test4" rule5EquationWithTwoDifferentConcretes
+    , TestLabel "rule5_test5" rule5EquationWithTwoBinds
+    , TestLabel "rule5_test6" rule5EquationWithConcreteOnTheLeftAndMetaOnTheRight
+    , TestLabel "rule5_test7" rule5EquationWithMetaOnTheLeftAndConcreteOnTheRight
   ]
-
+{-
 testsRule6 = 
   TestList [
     TestLabel "rule6_test1" equationWithTwoListsOfOneBindEachRule6
@@ -537,28 +632,31 @@ testsRule6 =
     , TestLabel "rule6_test5" equationOfTwoListOfBindsFirstLongerRule6
     , TestLabel "rule6_test6" equationWithOneListOfBindsAndOneVariableRule6
   ]
-
+-}
 testsRule7 = 
   TestList [
-    TestLabel "rule7_test1" equationWithOneEmptyBindRule7
-    , TestLabel "rule7_test2" equationWithtwoEmptyBindsRule7
-    , TestLabel "rule7_test3" equationWithTwoBindsRule7
-    , TestLabel "rule7_test4" equationWithOneEmptyBindOtherSideRule7
+    --TestLabel "rule7_test1" equationWithOneEmptyBindRule7
+    --, TestLabel "rule7_test2" equationWithtwoEmptyBindsRule7
+    TestLabel "rule7_test3" rule7EquationWithBindOfSizeZeroOnTheLeftSide
+    , TestLabel "rule7_test4" rule7EquationWithTwoBindsOfSizeZero
+    , TestLabel "rule7_test5" rule7EquationWithTwoBinds
+    , TestLabel "rule7_test6" rule7EquationWithVarOnEachSide
   ]
 
 testsRule8 = 
   TestList [
-    TestLabel "rule8_test1" equationWithOneEmptyBindRule8
-    , TestLabel "rule8_test2" equationWithtwoEmptyBindsRule8
-    , TestLabel "rule8_test3" equationWithTwoBindsRule8
-    , TestLabel "rule8_test4" equationWithOneEmptyBindOtherSideRule8
+    TestLabel "rule7_test3" rule8EquationWithBindOfSizeZeroOnTheRightSide
+    , TestLabel "rule7_test4" rule8EquationWithTwoBindsOfSizeZero
+    , TestLabel "rule7_test5" rule8EquationWithTwoBinds
+    , TestLabel "rule7_test6" rule8EquationWithVarOnEachSide
   ]
 
 testsRule9 = 
   TestList [
-    TestLabel "rule9_test1" equationWithTwoEmptyBindsRule9
-    , TestLabel "rule9_test2" equationWithOneBindAndAVariableRule9
-    , TestLabel "rule9_test3" equationWithTwoBindsRule9
+    TestLabel "rule9_test2" rule9EquationWithBindOfSizeZeroOnTheLeftSide
+    , TestLabel "rule9_test3" rule9EquationWithBindOfSizeZeroOnTheRightSide
+    , TestLabel "rule9_test4" rule9EquationWithTwoBinds
+    , TestLabel "rule9_test5" rule9EquationWithVarOnEachSide
   ]
 
 main = do
@@ -577,9 +675,11 @@ main = do
   putStrLn "Rule5"
   runTestTT testsRule5
   putStrLn ""
+  {-
   putStrLn "Rule6"
   runTestTT testsRule6
   putStrLn ""
+  -}
   putStrLn "Rule7"
   runTestTT testsRule7
   putStrLn ""
