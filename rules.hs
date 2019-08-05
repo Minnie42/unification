@@ -7,7 +7,7 @@ rule1 sol ((BL [B x y], BL [B x' y']):gamma) = Just (sol, ((V x, V x'):(V y, V y
 rule1 sol _ = Nothing
 
 rule2 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
-rule2 sol ((V (Concrete x), V (Concrete y)):gamma)
+rule2 sol ((V (x), V (y)):gamma)
   | x == y = Just (sol, gamma)
   | otherwise = Nothing
 rule2 sol _ = Nothing
@@ -26,8 +26,9 @@ rule4 (Just sol) ((V (Concrete y), V (Meta x)):gamma) =
 rule4 sol _ = Nothing
 
 rule5 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
-rule5 (Just sol) ((V (Meta x), V (Meta y)):gamma) = 
-  Just (Just ((Meta x, Meta y):sol), applySubstitutionToGamma (Meta x, Meta y) ((V (Meta x), V (Meta y)):gamma))
+rule5 (Just sol) ((V (Meta x), V (Meta y)):gamma) 
+  |x /= y = Just (Just ((Meta x, Meta y):sol), applySubstitutionToGamma (Meta x, Meta y) ((V (Meta x), V (Meta y)):gamma))
+  |otherwise = Nothing
 rule5 sol _ = Nothing
 
 rule6 :: Maybe Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
