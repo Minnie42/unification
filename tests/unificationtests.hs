@@ -50,6 +50,14 @@ unificationTest6 =
       (unification [(V (Meta "X"), V (Concrete "y")), (V (Meta "Y"), V (Concrete "z"))])
   )
 
+unificationTest7 =
+  TestCase (
+    assertEqual
+      "zyklisch"--TODO
+      []
+      (unification [(V (Meta"X"), V (Meta"Y")), (V (Meta"Y"), V (Meta"Z")), (V (Meta"Z"), V (Meta"X"))])
+  )
+
 testsUnification =
   TestList [
     TestLabel "unification_test1" unificationTest1
@@ -58,6 +66,7 @@ testsUnification =
     , TestLabel "unification_test4" unificationTest4
     , TestLabel "unification_test5" unificationTest5
     , TestLabel "unification_test6" unificationTest6
+    , TestLabel "unification_test7" unificationTest7
 
   ]
 

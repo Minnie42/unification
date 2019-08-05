@@ -20,12 +20,14 @@ rule3 sol _ = Nothing
 
 rule4 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule4 (Just sol) ((V (Meta x), V (Concrete y)):gamma) = 
-  Just (Just ((Meta x, Concrete y):sol), applySubstitutionToGamma (Meta x, Concrete y) gamma)
+  Just (Just ((Meta x, Concrete y):sol), applySubstitutionToGamma (Meta x, Concrete y) ((V (Meta x), V (Concrete y)):gamma))
+rule4 (Just sol) ((V (Concrete y), V (Meta x)):gamma) = 
+  Just (Just ((Meta x, Concrete y):sol), applySubstitutionToGamma (Meta x, Concrete y) ((V (Meta x), V (Concrete y)):gamma))
 rule4 sol _ = Nothing
 
 rule5 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule5 (Just sol) ((V (Meta x), V (Meta y)):gamma) = 
-  Just (Just ((Meta x, Meta y):sol), applySubstitutionToGamma (Meta x, Meta y) gamma)
+  Just (Just ((Meta x, Meta y):sol), applySubstitutionToGamma (Meta x, Meta y) ((V (Meta x), V (Meta y)):gamma))
 rule5 sol _ = Nothing
 
 rule6 :: Maybe Sol -> Problem -> Maybe [(Maybe Sol, Problem)]

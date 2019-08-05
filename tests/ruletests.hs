@@ -117,7 +117,7 @@ twoVariablesMetaAndConcreteRule4 =
   TestCase (
     assertEqual
       "the meta variable should be substituted with the concrete variable"
-      (Just (Just [(Meta "X",Concrete "x")], []))
+      (Just (Just [(Meta "X",Concrete "x")], [(V (Concrete "x"), V (Concrete "x"))]))
       (rule4 sol problem)
   )
   where
@@ -128,7 +128,7 @@ twoBindsWithTwoVariablesMetaAndConcreteRule4 =
   TestCase (
     assertEqual
       "the meta variable should be substituted with the concrete variable and again with the next concrete variable"
-      (Just (Just [(Meta "X", Concrete "x")], [(V (Concrete "x"), V (Concrete "y"))]))
+      (Just (Just [(Meta "X", Concrete "x")], [(V (Concrete "x"), V (Concrete "x")), (V (Concrete "x"), V (Concrete "y"))]))
       (rule4 sol problem)
   )
   where
@@ -138,13 +138,13 @@ twoBindsWithTwoVariablesMetaAndConcreteRule4 =
 twoVariablesConcreteAndMetaRule4 =
   TestCase (
     assertEqual
-      "anything then a meta and a concrete variable should resolve to Nothing"
-      Nothing
+      "?"--TODO
+      (Just (Just [(Meta "X",Concrete "x")], [(V (Concrete "x"), V (Concrete "x"))]))
       (rule4 sol problem)
   )
   where
     sol = Just []
-    problem = [(V (Concrete "X"), V (Meta "x"))]
+    problem = [(V (Concrete "x"), V (Meta "X"))]
 
 twoMetaVariablesRule4 =
   TestCase (
@@ -164,7 +164,7 @@ twoMetaVariablesRule5 =
   TestCase (
     assertEqual
       "the first meta variable should be substituted with the second meta variable"
-      (Just (Just [(Meta "X",Meta "Y")], []))
+      (Just (Just [(Meta "X",Meta "Y")], [(V (Meta "Y"), V (Meta "Y"))]))
       (rule5 sol problem)
   )
   where
@@ -175,7 +175,7 @@ twoBindsWithTwoMetaVariablesRule5 =
   TestCase (
     assertEqual
       "the first meta variable should be substituted with the other meta variable and again with the next meta variable"
-      (Just (Just [(Meta "X",Meta "Y")],[(V (Meta "Y"),V (Meta "Z"))]))
+      (Just (Just [(Meta "X", Meta "Y")], [(V (Meta "Y"), V (Meta "Y")), (V (Meta "Y"), V (Meta "Z"))]))
       (rule5 sol problem)
   )
   where
@@ -187,7 +187,7 @@ twoVariablesConcreteAndMetaRule5 =
     assertEqual
       "anything then two meta variables should resolve to Nothing"
       Nothing
-      (rule4 sol problem)
+      (rule5 sol problem)
   )
   where
     sol = Just []
