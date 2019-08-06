@@ -1,6 +1,7 @@
 import Test.HUnit
 import Types
 import Rules
+import Util
 
 testVar :: Var
 testVar = Meta "Var"
@@ -31,6 +32,18 @@ testMetaY = Meta "MetaY"
 
 testBind :: Bind
 testBind = B testVar testVar
+
+testBindA :: Bind
+testBindA = B testVarX testVarX
+
+testBindB :: Bind
+testBindB = B testVarY testVarY
+
+testBindC :: Bind
+testBindC = B testVarX testVarY
+
+testBindD :: Bind
+testBindD = B testVarY testVarX
 
 testGamma :: Problem
 testGamma = []
@@ -301,6 +314,47 @@ rule3EquationWithMetaOnTheLeftAndConcreteOnTheRight =
 -------------------------------
 -- Rule 4 ---------------------
 -------------------------------
+rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with one meta variable on the left side and one concrete variable on the right should apply a\
+      \substitution from the meta variable to the concrete variable."
+      (
+        Just (
+          (Just ((testMetaX, testConcreteX):testSol))
+        , ((V testConcreteX, V testConcreteX):(applySubstitutionToGamma (testMetaX, testConcreteX) testGamma))
+        )
+      )
+      (
+        rule4 
+          (Just testSol) 
+          ((V testMetaX, V testConcreteX):testGamma)
+      )
+  )
+  where
+    testSol = []
+
+rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
+  TestCase (
+    assertEqual
+      "An equation with one concrete variable on the left side and one meta variable on the right should apply a\
+      \substitution from the meta variable to the concrete variable."
+      (
+        Just (
+          (Just ((testMetaX, testConcreteX):testSol))
+        , ((V testConcreteX, V testConcreteX):(applySubstitutionToGamma (testMetaX, testConcreteX) testGamma))
+        )
+      )
+      (
+        rule4 
+          (Just testSol) 
+          ((V testConcreteX, V testMetaX):testGamma)
+      )
+  )
+  where
+    testSol = []
+
+
 rule4EquationWithTwoMetas =
   TestCase (
     assertEqual
@@ -339,6 +393,26 @@ rule4EquationWithTwoBinds =
 -------------------------------
 -- Rule 5 ---------------------
 -------------------------------
+rule5EquationWithTwoDiffentMetas =
+  TestCase (
+    assertEqual
+      "An equation with two different meta variables should apply a substitution from the meta\
+      \variable on the left of the equation to the meta variable on the right."
+      (
+        Just (
+          (Just ((testMetaX, testMetaY):testSol))
+        , ((V testMetaY, V testMetaY):(applySubstitutionToGamma (testMetaX, testMetaY) testGamma))
+        )
+      )
+      (
+        rule5 
+          (Just testSol) 
+          ((V testMetaX, V testMetaY):testGamma)
+      )
+  )
+  where
+    testSol = []
+
 rule5EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
@@ -347,7 +421,7 @@ rule5EquationWithTwoIdenticalMetas =
       (
         rule5 
           testSol 
-          ((V testMeta, V testMeta):testGamma)
+          ((V testMetaX, V testMetaX):testGamma)
       )
   )
   
@@ -359,7 +433,7 @@ rule5EquationWithTwoIdenticalConcretes =
       (
         rule5 
           testSol 
-          ((V testConcrete, V testConcrete):testGamma)
+          ((V testConcreteX, V testConcreteX):testGamma)
       )
   )
   
@@ -413,10 +487,173 @@ rule5EquationWithMetaOnTheLeftAndConcreteOnTheRight =
 -------------------------------
 -- Rule 6 ---------------------
 -------------------------------
+rule6EquationWithBindsGreaterThenOneOnBothSides =
+  TestCase (
+    assertEqual
+      "An equation with binds of size greater then one should combine the first bind of the left\
+      \side with all binds of the right side."
+      (
+        Just [
+          (
+            testSol
+          , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL [testBindD]):testGamma
+          )
+        , (
+            testSol
+          , (BL [testBindA], BL [testBindD]):(BL [testBindB], BL [testBindC]):testGamma
+          )  
+        ]
+      )
+      (
+        rule6
+          testSol 
+          ((BL [testBindA, testBindB], BL [testBindC, testBindD]):testGamma)
+      )
+  )
+
+rule6EquationWithBindOfSizeTwoOnRightSide =
+  TestCase (
+    assertEqual
+      "An equation with one bind of size one on the left side and one bind of size two on the right side should combine the first bind of the left\
+      \side with all binds of the right side."
+      (
+        Just [
+          (
+            testSol
+          , (BL [testBindA], BL [testBindC]):(BL [], BL [testBindD]):testGamma
+          )
+        , (
+            testSol
+          , (BL [testBindA], BL [testBindD]):(BL [], BL [testBindC]):testGamma
+          )  
+        ]
+      )
+      (
+        rule6
+          testSol 
+          ((BL [testBindA], BL [testBindC, testBindD]):testGamma)
+      )
+  )
+
+rule6EquationWithBindOfSizeTwoOnLeftSide =
+  TestCase (
+    assertEqual
+      "An equation with one bind of size one on the right side and one bind of size two on the left side should combine the first bind of the left\
+      \side with the bind of the right side."
+      (
+        Just [
+          (
+            testSol
+          , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL []):testGamma
+          )
+        ] 
+      )
+      (
+        rule6
+          testSol 
+          ((BL [testBindA, testBindB], BL [testBindC]):testGamma)
+      )
+  )
+
+rule6EquationWithBindOfSizeZeroOnLeftSide =
+  TestCase (
+    assertEqual
+      "An equation with one bind of size zero on the left side and one bind of size two on the right side should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [], BL [testBind, testBind]):testGamma)
+      )
+  )
+
+rule6EquationWithBindOfSizeZeroOnRightSide =
+  TestCase (
+    assertEqual
+      "An equation with one bind of size zero on the right side and one bind of size two on the left side should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [testBind, testBind], BL []):testGamma)
+      )
+  )
+  
+rule6EquationWithTwoBindsOfSizeOne =
+  TestCase (
+    assertEqual
+      "An equation with two binds of size one should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [testBind], BL [testBind]):testGamma)
+      )
+  )
+
+rule6EquationWithTwoBindsOfSizeZero =
+  TestCase (
+    assertEqual
+      "An equation with two binds of size zero should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [], BL []):testGamma)
+      )
+  )
+
+rule6EquationWithTwoVariables =
+  TestCase (
+    assertEqual
+      "An equation with two variables should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((V testVar, V testVar):testGamma)
+      )
+  )
 
 -------------------------------
 -- Rule 7 ---------------------
 -------------------------------
+rule7EquationWithBindOfSizeOneOnLeftSide =
+  TestCase (
+    assertEqual
+      "An equation with a bind of size one on the left side and bind of size zero on the right side\
+      \should transform the current solution to nothing."
+      (
+        Just (
+          Nothing
+        , ((BL [testBind], BL []):testGamma)
+        )
+      )
+      (
+        rule7 
+          testSol 
+          ((BL [testBind], BL []):testGamma)
+      )
+  )
+
+rule7EquationWithBindOfSizeTwoOnLeftSide =
+  TestCase (
+    assertEqual
+      "An equation with a bind of size two on the left side and bind of size zero on the right side\
+      \should transform the current solution to nothing."
+      (
+        Just (
+          Nothing
+        , (((BL [testBind, testBind]), BL []):testGamma)
+        )
+      )
+      (
+        rule7 
+          testSol 
+          (((BL [testBind, testBind]), BL []):testGamma)
+      )
+  )
+
 rule7EquationWithBindOfSizeZeroOnTheLeftSide =
   TestCase (
     assertEqual
@@ -468,6 +705,42 @@ rule7EquationWithVarOnEachSide =
 -------------------------------
 -- Rule 8 ---------------------
 -------------------------------
+rule8EquationWithBindOfSizeOneOnRightSide =
+  TestCase (
+    assertEqual
+      "An equation with a bind of size one on the right side and bind of size zero on the left side\
+      \should transform the current solution to nothing."
+      (
+        Just (
+          Nothing
+        , ((BL [], BL [testBind]):testGamma)
+        )
+      )
+      (
+        rule8
+          testSol 
+          ((BL [], BL [testBind]):testGamma)
+      )
+  )
+
+rule8EquationWithBindOfSizeTwoOnLeftSide =
+  TestCase (
+    assertEqual
+      "An equation with a bind of size two on the left side and bind of size zero on the right side\
+      \should transform the current solution to nothing."
+      (
+        Just (
+          Nothing
+        , ((BL [], (BL [testBind, testBind])):testGamma)
+        )
+      )
+      (
+        rule8 
+          testSol 
+          ((BL [], (BL [testBind, testBind])):testGamma)
+      )
+  )
+
 rule8EquationWithBindOfSizeZeroOnTheRightSide =
   TestCase (
     assertEqual
@@ -519,6 +792,18 @@ rule8EquationWithVarOnEachSide =
 -------------------------------
 -- Rule 9 ---------------------
 -------------------------------
+rule9EquationWithTwoBindsOfSizeZero =
+  TestCase (
+    assertEqual
+      "An equation with two binds of size zero should ."
+      (Just (testSol, testGamma))
+      (
+        rule9
+          testSol 
+          ((BL [], BL []):testGamma)
+      )
+  )
+
 rule9EquationWithBindOfSizeZeroOnTheLeftSide =
   TestCase (
     assertEqual
@@ -605,9 +890,9 @@ testsRule3 =
 
 testsRule4 = 
   TestList [
-    --TestLabel "rule4_test1" twoVariablesMetaAndConcreteRule4
-    --, TestLabel "rule4_test2" twoMetaVariablesRule4
-     TestLabel "rule4_test3" rule4EquationWithTwoMetas
+    TestLabel "rule4_test1" rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight
+    , TestLabel "rule4_test2" rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight
+    , TestLabel "rule4_test3" rule4EquationWithTwoMetas
     , TestLabel "rule4_test4" rule4EquationWithTwoConcretes
     , TestLabel "rule4_test5" rule4EquationWithTwoBinds
     
@@ -615,29 +900,32 @@ testsRule4 =
 
 testsRule5 = 
   TestList [
-    TestLabel "rule5_test2" rule5EquationWithTwoIdenticalMetas
+    TestLabel "rule5_test1" rule5EquationWithTwoDiffentMetas
+    , TestLabel "rule5_test2" rule5EquationWithTwoIdenticalMetas
     , TestLabel "rule5_test3" rule5EquationWithTwoIdenticalConcretes
     , TestLabel "rule5_test4" rule5EquationWithTwoDifferentConcretes
     , TestLabel "rule5_test5" rule5EquationWithTwoBinds
     , TestLabel "rule5_test6" rule5EquationWithConcreteOnTheLeftAndMetaOnTheRight
     , TestLabel "rule5_test7" rule5EquationWithMetaOnTheLeftAndConcreteOnTheRight
   ]
-{-
+
 testsRule6 = 
   TestList [
-    TestLabel "rule6_test1" equationWithTwoListsOfOneBindEachRule6
-    , TestLabel "rule6_test2" equationWithTwoListsOfTwoBindsEachRule6
-    , TestLabel "rule6_test3" equationWithTwoListOfBindsOneEmptyRule6
-    , TestLabel "rule6_test4" equationOfTwoListOfBindsSecondLongerRule6
-    , TestLabel "rule6_test5" equationOfTwoListOfBindsFirstLongerRule6
-    , TestLabel "rule6_test6" equationWithOneListOfBindsAndOneVariableRule6
+    TestLabel "rule6_test1" rule6EquationWithBindsGreaterThenOneOnBothSides
+    , TestLabel "rule6_test2" rule6EquationWithBindOfSizeTwoOnRightSide
+    , TestLabel "rule6_test3" rule6EquationWithBindOfSizeTwoOnLeftSide
+    , TestLabel "rule6_test4" rule6EquationWithBindOfSizeZeroOnLeftSide
+    , TestLabel "rule6_test5" rule6EquationWithBindOfSizeZeroOnRightSide
+    , TestLabel "rule6_test6" rule6EquationWithTwoBindsOfSizeOne
+    , TestLabel "rule6_test7" rule6EquationWithTwoBindsOfSizeZero
+    , TestLabel "rule6_test8" rule6EquationWithTwoVariables
   ]
--}
+
 testsRule7 = 
   TestList [
-    --TestLabel "rule7_test1" equationWithOneEmptyBindRule7
-    --, TestLabel "rule7_test2" equationWithtwoEmptyBindsRule7
-    TestLabel "rule7_test3" rule7EquationWithBindOfSizeZeroOnTheLeftSide
+    TestLabel "rule7_test1" rule7EquationWithBindOfSizeOneOnLeftSide
+    , TestLabel "rule7_test2" rule7EquationWithBindOfSizeTwoOnLeftSide
+    , TestLabel "rule7_test3" rule7EquationWithBindOfSizeZeroOnTheLeftSide
     , TestLabel "rule7_test4" rule7EquationWithTwoBindsOfSizeZero
     , TestLabel "rule7_test5" rule7EquationWithTwoBinds
     , TestLabel "rule7_test6" rule7EquationWithVarOnEachSide
@@ -645,7 +933,9 @@ testsRule7 =
 
 testsRule8 = 
   TestList [
-    TestLabel "rule7_test3" rule8EquationWithBindOfSizeZeroOnTheRightSide
+    TestLabel "rule7_test1" rule8EquationWithBindOfSizeOneOnRightSide
+    , TestLabel "rule7_test2" rule8EquationWithBindOfSizeTwoOnLeftSide
+    , TestLabel "rule7_test3" rule8EquationWithBindOfSizeZeroOnTheRightSide
     , TestLabel "rule7_test4" rule8EquationWithTwoBindsOfSizeZero
     , TestLabel "rule7_test5" rule8EquationWithTwoBinds
     , TestLabel "rule7_test6" rule8EquationWithVarOnEachSide
@@ -653,7 +943,8 @@ testsRule8 =
 
 testsRule9 = 
   TestList [
-    TestLabel "rule9_test2" rule9EquationWithBindOfSizeZeroOnTheLeftSide
+    TestLabel "rule9_test1" rule9EquationWithTwoBindsOfSizeZero
+    , TestLabel "rule9_test2" rule9EquationWithBindOfSizeZeroOnTheLeftSide
     , TestLabel "rule9_test3" rule9EquationWithBindOfSizeZeroOnTheRightSide
     , TestLabel "rule9_test4" rule9EquationWithTwoBinds
     , TestLabel "rule9_test5" rule9EquationWithVarOnEachSide
@@ -675,11 +966,9 @@ main = do
   putStrLn "Rule5"
   runTestTT testsRule5
   putStrLn ""
-  {-
   putStrLn "Rule6"
   runTestTT testsRule6
   putStrLn ""
-  -}
   putStrLn "Rule7"
   runTestTT testsRule7
   putStrLn ""
