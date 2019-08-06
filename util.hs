@@ -22,5 +22,9 @@ applySubstitutionToEquation substitution (side1, side2) =
 applySubstitutionToGamma :: (Var, Var) -> Problem -> Problem
 applySubstitutionToGamma substitution gamma = map (applySubstitutionToEquation substitution) gamma
 
+applySolutionToGamma :: Sol -> Problem -> Problem
+applySolutionToGamma [] gamma = gamma
+applySolutionToGamma sol gamma = applySolutionToGamma (init sol) (applySubstitutionToGamma (last sol) gamma)
+
 unJust :: (Maybe a) -> a
 unJust (Just value) = value
