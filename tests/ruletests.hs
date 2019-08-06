@@ -2,54 +2,7 @@ import Test.HUnit
 import Types
 import Rules
 import Util
-
-testVar :: Var
-testVar = Meta "Var"
-
-testVarX :: Var
-testVarX = Meta "VarX"
-
-testVarY :: Var
-testVarY = Meta "VarY"
-
-testConcrete :: Var
-testConcrete = Concrete "Concrete"
-
-testMeta:: Var
-testMeta = Meta "Meta"
-
-testConcreteX :: Var
-testConcreteX = Concrete "ConcreteX"
-
-testConcreteY :: Var
-testConcreteY = Concrete "ConcreteY"
-
-testMetaX :: Var
-testMetaX = Meta "MetaX"
-
-testMetaY :: Var
-testMetaY = Meta "MetaY"
-
-testBind :: Bind
-testBind = B testVar testVar
-
-testBindA :: Bind
-testBindA = B testVarX testVarX
-
-testBindB :: Bind
-testBindB = B testVarY testVarY
-
-testBindC :: Bind
-testBindC = B testVarX testVarY
-
-testBindD :: Bind
-testBindD = B testVarY testVarX
-
-testGamma :: Problem
-testGamma = []
-
-testSol :: Maybe Sol
-testSol = Just []
+import Tests.DummyVariables
 
 -------------------------------
 -- Rule 1 ---------------------
@@ -58,8 +11,8 @@ rule1EquationEachSideBindOfSizeOne =
   TestCase (
     assertEqual
       "An equation with a bind of size one on each side should combine the first variable\
-      \of the left bind with the first variable of the right bind and the second variable of\
-      \the right bind with the second variable of the left bind."
+      \ of the left bind with the first variable of the right bind and the second variable of\
+      \ the right bind with the second variable of the left bind."
       (Just 
         (
           testSol
@@ -318,7 +271,7 @@ rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight =
   TestCase (
     assertEqual
       "An equation with one meta variable on the left side and one concrete variable on the right should apply a\
-      \substitution from the meta variable to the concrete variable."
+      \ substitution from the meta variable to the concrete variable."
       (
         Just (
           (Just ((testMetaX, testConcreteX):testSol))
@@ -338,7 +291,7 @@ rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
   TestCase (
     assertEqual
       "An equation with one concrete variable on the left side and one meta variable on the right should apply a\
-      \substitution from the meta variable to the concrete variable."
+      \ substitution from the meta variable to the concrete variable."
       (
         Just (
           (Just ((testMetaX, testConcreteX):testSol))
@@ -397,7 +350,7 @@ rule5EquationWithTwoDiffentMetas =
   TestCase (
     assertEqual
       "An equation with two different meta variables should apply a substitution from the meta\
-      \variable on the left of the equation to the meta variable on the right."
+      \ variable on the left of the equation to the meta variable on the right."
       (
         Just (
           (Just ((testMetaX, testMetaY):testSol))
@@ -491,7 +444,7 @@ rule6EquationWithBindsGreaterThenOneOnBothSides =
   TestCase (
     assertEqual
       "An equation with binds of size greater then one should combine the first bind of the left\
-      \side with all binds of the right side."
+      \ side with all binds of the right side."
       (
         Just [
           (
@@ -515,7 +468,7 @@ rule6EquationWithBindOfSizeTwoOnRightSide =
   TestCase (
     assertEqual
       "An equation with one bind of size one on the left side and one bind of size two on the right side should combine the first bind of the left\
-      \side with all binds of the right side."
+      \ side with all binds of the right side."
       (
         Just [
           (
@@ -539,7 +492,7 @@ rule6EquationWithBindOfSizeTwoOnLeftSide =
   TestCase (
     assertEqual
       "An equation with one bind of size one on the right side and one bind of size two on the left side should combine the first bind of the left\
-      \side with the bind of the right side."
+      \ side with the bind of the right side."
       (
         Just [
           (
@@ -622,7 +575,7 @@ rule7EquationWithBindOfSizeOneOnLeftSide =
   TestCase (
     assertEqual
       "An equation with a bind of size one on the left side and bind of size zero on the right side\
-      \should transform the current solution to nothing."
+      \ should transform the current solution to nothing."
       (
         Just (
           Nothing
@@ -640,7 +593,7 @@ rule7EquationWithBindOfSizeTwoOnLeftSide =
   TestCase (
     assertEqual
       "An equation with a bind of size two on the left side and bind of size zero on the right side\
-      \should transform the current solution to nothing."
+      \ should transform the current solution to nothing."
       (
         Just (
           Nothing
@@ -709,7 +662,7 @@ rule8EquationWithBindOfSizeOneOnRightSide =
   TestCase (
     assertEqual
       "An equation with a bind of size one on the right side and bind of size zero on the left side\
-      \should transform the current solution to nothing."
+      \ should transform the current solution to nothing."
       (
         Just (
           Nothing
@@ -727,7 +680,7 @@ rule8EquationWithBindOfSizeTwoOnLeftSide =
   TestCase (
     assertEqual
       "An equation with a bind of size two on the left side and bind of size zero on the right side\
-      \should transform the current solution to nothing."
+      \ should transform the current solution to nothing."
       (
         Just (
           Nothing
