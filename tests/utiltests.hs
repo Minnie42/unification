@@ -1,194 +1,201 @@
 import Test.HUnit
 import Types
 import Util
+import Tests.DummyVariables
+
 
 -----------------------------------
 -- applySubstitutionToMeta --------
 -----------------------------------
-applySubstitutionToMeta1 =
+substituteMetaToConcrete =
   TestCase (
     assertEqual
-      "variable is in substitution so it gets substituted"
-      (Concrete "y")
-      (applySubstitutionToMeta sub var)
+      "Substitute a meta variable with a substitution that starts with this meta variable and ends\
+      \ with a concrete variable should return this concrete variable."
+      testConcreteX
+      (applySubstitutionToMeta (testMetaX, testConcreteX) testMetaX)
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    var = Meta "X"
 
-applySubstitutionToMeta2 =
+substituteMetaToMeta =
   TestCase (
     assertEqual
-      "variable not in substitution so it returns variable"
-      var
-      (applySubstitutionToMeta sub var)
+      "Substitute a meta variable with a substitution that starts with this meta variable and ends\
+      \ with another meta variable should return the second meta variable."
+      testMetaY
+      (applySubstitutionToMeta (testMetaX, testMetaY) testMetaX)
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    var = Meta "Y"
 
-applySubstitutionToMeta3 =
+twoDifferentMetasNoSubstitution =
   TestCase (
     assertEqual
-      "variable is in substitution so it gets substituted"
-      (Meta "Y")
-      (applySubstitutionToMeta sub var)
+      "If the left side of the substitution doesn't match the variable no substitution should happen."
+      testMetaY
+      (applySubstitutionToMeta (testMetaX, testVar) testMetaY)
   )
-  where
-    sub = (Meta "X", Meta "Y")
-    var = Meta "X"
 
-applySubstitutionToMeta4 =
+concreteNoSubstitution =
   TestCase (
     assertEqual
-      "variable not in substitution so it returns variable"
-      var
-      (applySubstitutionToMeta sub var)
+      "If we get a concrete as variable to be substituted no substitution should happen."
+      testConcreteX
+      (applySubstitutionToMeta (testMeta, testVar) testConcreteX)
   )
-  where
-    sub = (Meta "X", Meta "Y")
-    var = Concrete "x"
 
 -----------------------------------
 -- applySubstitutionToBind --------
 -----------------------------------
-applySubstitutionToBind1 =
+substitutionInBind =
   TestCase (
     assertEqual
-      "one variable in bind is in substitution so it gets substituted"
-      (B (Concrete "x") (Concrete "y"))
-      (applySubstitutionToBind sub bind)
+      "Given a Substitution that applies in the given bind the substitution should apply."
+      (B testConcreteY testMetaY)
+      (applySubstitutionToBind (testMetaX, testConcreteY) (B testMetaX testMetaY))
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    bind = (B (Concrete "x") (Meta "X"))
-
-applySubstitutionToBind2 =
+  
+noSubstitutionInBind =
   TestCase (
     assertEqual
-      "no variable in bind is in substitution so it reurns bind"
-      (B (Concrete "x") (Meta "Y"))
-      (applySubstitutionToBind sub bind)
+      "Given a Substitution that doesn't apply in the given bind no substitution should apply."
+      (B testMetaY testMetaY)
+      (applySubstitutionToBind (testMetaX, testConcreteY) (B testMetaY testMetaY))
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    bind = (B (Concrete "x") (Meta "Y"))
 
 -----------------------------------
 -- applySubstitutionToSide --------
 -----------------------------------
-applySubstitutionToSide1 =
+substitutionInVariable =
   TestCase (
     assertEqual
-      "?" --TODO: comment
-      (BL [B (Concrete "y") (Meta "Y")])
-      (applySubstitutionToSide sub side)
+      "Given a Substitution that applies in the given side that is a variabe the substitution should apply."
+      (V testConcreteY)
+      (applySubstitutionToSide (testMetaX, testConcreteY) (V testMetaX))
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    side = BL [B (Meta "X") (Meta "Y")]
 
-applySubstitutionToSide2 =
+noSubstitutionInVariable =
   TestCase (
     assertEqual
-      "?" --TODO: comment
-      (BL [B (Meta "Y") (Concrete "y")])
-      (applySubstitutionToSide sub side)
+      "Given a Substitution that doesn't apply in the given side that is a variabe no substitution should apply."
+      (V testMetaY)
+      (applySubstitutionToSide (testMetaX, testConcreteY) (V testMetaY))
   )
-  where
-    sub = (Meta "X", Meta "Y")
-    side = BL [B (Meta "X") (Concrete "y")]
 
-applySubstitutionToSide3 =
+substitutionInBinds =
   TestCase (
     assertEqual
-      "?" --TODO: comment
-      (BL [B (Concrete "y") (Concrete "x")])
-      (applySubstitutionToSide sub side)
+      "Given a Substitution that applies in the given side that is a bind of size two the substitution should apply."
+      (BL [(B testConcreteY testMetaY), (B testMetaY testConcreteY)])
+      (applySubstitutionToSide (testMetaX, testConcreteY) (BL [(B testMetaX testMetaY), (B testMetaY testMetaX)]))
   )
-  where
-    sub = (Meta "X", Concrete "y")
-    side = BL [B (Concrete "y") (Concrete "x")]
 
+noSubstitutionInBinds =
+  TestCase (
+    assertEqual
+      "Given a Substitution that doesn't apply in the given side that is a bind no substitution should apply."
+      (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)])
+      (applySubstitutionToSide (testMetaX, testConcreteY) (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)]))
+  )
+  
+noSubstitutionWithEmptySet =
+  TestCase (
+    assertEqual
+      "Given an empty set no substitution should apply."
+      (BL [])
+      (applySubstitutionToSide (testMetaX, testConcreteY) (BL []))
+  )
+  
 -----------------------------------
 -- applySubstitutionToEquation ----
 -----------------------------------
-applySubstitutionToEquation1 =
+substitutionInEquation =
   TestCase (
     assertEqual
-      "" --TODO
-      (V (Meta "Y"), V (Concrete "y"))
-      (applySubstitutionToEquation sub equation)
+      "Given a Substitution that applies in the given equation the substitution should apply."
+      (BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY])
+      (applySubstitutionToEquation (testMetaX, testConcreteY) (BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]))
   )
-  where
-    sub = (Meta "X", Meta "Y")
-    equation = (V (Meta "X"), V (Concrete "y"))
-      
-applySubstitutionToEquation2 =
+  
+noSubstitutionInEquation =
   TestCase (
     assertEqual
-      "" --TODO
-      (BL [B (Concrete "x") (Concrete "y")], (V (Concrete "y")))
-      (applySubstitutionToEquation sub equation)
+      "Given a Substitution that doesn't apply in the given equation no substitution should apply."
+      (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY])
+      (applySubstitutionToEquation (testMetaX, testConcreteY) (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]))
   )
-  where
-    sub = (Meta "X", Concrete "x")
-    equation = ((BL [B (Meta "X") (Concrete "y")]), (V (Concrete "y")))
-
-applySubstitutionToEquation3 =
-  TestCase (
-    assertEqual
-      "" --TODO
-      ((BL [B (Meta "Y") (Concrete "y")]), (V (Concrete "y")))
-      (applySubstitutionToEquation sub equation)
-  )
-  where
-    sub = (Meta "X", Concrete "x")
-    equation = ((BL [B (Meta "Y") (Concrete "y")]), (V (Concrete "y")))
 
 -----------------------------------	
 -- applySubstitutionToGamma -------
 -----------------------------------
-applySubstitutionToGamma1 =
+substitutionInGamma =
   TestCase (
     assertEqual
-      "" --TODO
-      ([(V (Concrete "x") ,V (Concrete "x"))])
-      (applySubstitutionToGamma sub gamma)
+      "Given a Substitution that applies in the given gamma the substitution should apply."
+      [(BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY]), (V testConcreteY, V testVarX)]
+      (
+        applySubstitutionToGamma 
+          (testMetaX, testConcreteY) 
+          [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]), (V testMetaX, V testVarX)]
+      )
   )
-  where
-    sub = (Meta "X", Concrete "x")
-    gamma = [(V (Concrete "x") ,V (Meta "X"))]
-    
-applySubstitutionToGamma2 =
-  TestCase (
-    assertEqual
-      "" --TODO
-      ([(V (Concrete "x") ,V (Meta "Y"))])
-      (applySubstitutionToGamma sub gamma)
-  )
-  where
-    sub = (Meta "X", Meta "Y")
-    gamma = [(V (Concrete "x") ,V (Meta "X"))]
   
-applySubstitutionToGamma3 =
+noSubstitutionInGamma =
   TestCase (
     assertEqual
-      "" --TODO
-      ([(V (Concrete "x") ,V (Meta "Y"))])
-      (applySubstitutionToGamma sub gamma)
+      "Given a Substitution that doesn't apply in the given gamma no substitution should apply."
+      [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
+      (
+        applySubstitutionToGamma 
+          (testMetaX, testConcreteY) 
+          [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
+      )
   )
-  where
-    sub = (Meta "X", Meta "Y")
-    gamma = [(V (Concrete "x") ,V (Meta "Y"))]
+
+-----------------------------------	
+-- applySolutionToGamma -------
+-----------------------------------
+solutionEmptyList =
+  TestCase (
+    assertEqual
+      "Given an empty solution gamma shouldn't change."
+      [(V testMetaX, V testMetaX)]
+      (
+        applySolutionToGamma 
+          [] 
+          [(V testMetaX, V testMetaX)]
+      )
+  )
+  
+solutionWithTwoIndependentSubstitutions =
+  TestCase (
+    assertEqual
+      "Given a Solution with two independent substitutions should apply the substitutions seperately."
+      [(BL [B testConcreteX testConcreteY], BL [B testConcreteY testConcreteY]), (V testConcreteY, V testConcreteX)]
+      (
+        applySolutionToGamma 
+          [(testMetaX, testConcreteX), (testMetaY, testConcreteY)] 
+          [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testMetaX)]
+      )
+  )
+
+solutionWithTwoDependentSubstitutions =
+  TestCase (
+    assertEqual
+      "Given a Solution with two dependent substitutions should apply the first substitutions correctly and the second\
+      \ correctly considering the previous changes."
+      [(BL [B testConcreteY testConcreteY], BL [B testConcreteY testConcreteY]), (V testConcreteY, V testConcreteY)]
+      (
+        applySolutionToGamma 
+          [(testMetaY, testConcreteY), (testMetaX, testMetaY)] 
+          [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testMetaX)]
+      )
+  )
 
 -----------------------------------
 -- unJust -------------------------
 -----------------------------------
-unJust1 =
+unJustApplies =
   TestCase (
     assertEqual
-      ""--TODO
+      "Given a value wrapped in a just it removes the just."
       (value)
       (unJust (Just value))
   )
@@ -200,42 +207,51 @@ unJust1 =
 -------------------------------
 testsApplySubstitutionToMeta = 
   TestList [
-    TestLabel "applySubstitutionToMeta_test1" applySubstitutionToMeta1
-    , TestLabel "applySubstitutionToMeta_test2" applySubstitutionToMeta2
-    , TestLabel "applySubstitutionToMeta_test3" applySubstitutionToMeta3
-    , TestLabel "applySubstitutionToMeta_test4" applySubstitutionToMeta4
+    TestLabel "applySubstitutionToMeta_test1" substituteMetaToConcrete
+    , TestLabel "applySubstitutionToMeta_test2" substituteMetaToMeta
+    , TestLabel "applySubstitutionToMeta_test3" twoDifferentMetasNoSubstitution
+    , TestLabel "applySubstitutionToMeta_test4" concreteNoSubstitution
   ]
 
 testsApplySubstitutionToBind =
   TestList [
-    TestLabel "applySubstitutionToBind_test1" applySubstitutionToBind1
-    , TestLabel "applySubstitutionToBind_test2" applySubstitutionToBind2
+    TestLabel "applySubstitutionToBind_test1" substitutionInBind
+    , TestLabel "applySubstitutionToBind_test2" noSubstitutionInBind
   ]
 
 testsApplySubstitutionToSide =
   TestList [
-    TestLabel "applySubstitutionToSide_test1" applySubstitutionToSide1
-    , TestLabel "applySubstitutionToSide_test2" applySubstitutionToSide2
-    , TestLabel "applySubstitutionToSide_test3" applySubstitutionToSide3
+    TestLabel "applySubstitutionToSide_test1" substitutionInVariable
+    , TestLabel "applySubstitutionToSide_test2" noSubstitutionInVariable
+    , TestLabel "applySubstitutionToSide_test3" substitutionInBinds
+    , TestLabel "applySubstitutionToSide_test4" noSubstitutionInBinds
+    , TestLabel "applySubstitutionToSide_test5" noSubstitutionWithEmptySet
+    
   ]
 
 testsApplySubstitutionToEquation =
   TestList [
-    TestLabel "applySubstitutionToEquation_test1" applySubstitutionToEquation1
-    , TestLabel "applySubstitutionToEquation_test2" applySubstitutionToEquation2
-    , TestLabel "applySubstitutionToEquation_test3" applySubstitutionToEquation3
+    TestLabel "applySubstitutionToEquation_test1" substitutionInEquation
+    , TestLabel "applySubstitutionToEquation_test2" noSubstitutionInEquation
   ]
 
 testsApplySubstitutionToGamma =
   TestList [
-    TestLabel "applySubstitutionToGamma_test1" applySubstitutionToGamma1
-    , TestLabel "applySubstitutionToGamma_test2" applySubstitutionToGamma2
-    , TestLabel "applySubstitutionToGamma_test3" applySubstitutionToGamma3
+    TestLabel "applySubstitutionToGamma_test1" substitutionInGamma
+    , TestLabel "applySubstitutionToGamma_test2" noSubstitutionInGamma
+  ]
+
+testsApplySolutionToGamma =
+  TestList [
+    TestLabel "applySolutionToGamma_test1" solutionEmptyList
+    , TestLabel "applySolutionToGamma_test2" solutionWithTwoIndependentSubstitutions
+    , TestLabel "applySolutionToGamma_test3" solutionWithTwoDependentSubstitutions
+    
   ]
 
 testsUnJust =
   TestList [
-    TestLabel "unJust_test1" unJust1
+    TestLabel "unJust_test1" unJustApplies
   ]
 
 main = do
@@ -254,6 +270,10 @@ main = do
   putStrLn "applySubstitutionToGamma"
   runTestTT testsApplySubstitutionToGamma
   putStrLn ""
+  putStrLn "applySolutionToGamma"
+  runTestTT testsApplySolutionToGamma
+  putStrLn ""
   putStrLn "unJust"
   runTestTT testsUnJust
   putStrLn ""
+ 
