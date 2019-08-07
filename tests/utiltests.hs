@@ -247,7 +247,31 @@ chainVariableThatNotExpands =
       [B testMetaX testMetaY]
       (expandChainVariable (CV "A" testMetaX testMetaY) 1)
   )
- 
+
+-----------------------------------
+-- expandChainVariablesInBinds ----
+-----------------------------------
+noExpansion =
+  TestCase (
+    assertEqual
+      "."
+      [[testBindA, testBindB]]
+      (expandChainVariablesInBinds [testBindA, testBindB])
+  )
+
+oneExpansion =
+  TestCase (
+    assertEqual
+      "."
+      [
+        [B testMetaX testMetaY, testBindB]
+      , [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") testMetaY, testBindB]
+      , [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") (Meta "CVtest2"), B (Meta "CVtest2") testMetaY, testBindB]
+      ]
+      (take 3 (expandChainVariablesInBinds [CV "test" testMetaX testMetaY, testBindB]))
+  )
+
+
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -313,6 +337,12 @@ testsExpandChainVariable =
     , TestLabel "expandChainVariable_test2" chainVariableThatNotExpands
   ]
 
+testsExpandChainVariablesInBinds =
+  TestList [
+    TestLabel "expandChainVariablesInBinds_test1" noExpansion
+    , TestLabel "expandChainVariablesInBinds_test2" oneExpansion
+  ]
+
 main = do
   putStrLn "applySubstitutionToMeta"
   runTestTT testsApplySubstitutionToMeta
@@ -341,5 +371,7 @@ main = do
   putStrLn "expandChainVariable"
   runTestTT testsExpandChainVariable
   putStrLn ""
-  
+  putStrLn "expandChainVariablesInBinds"
+  runTestTT testsExpandChainVariablesInBinds
+  putStrLn ""
  

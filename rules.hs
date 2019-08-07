@@ -2,8 +2,6 @@ module Rules where
 import Types
 import Util
 
-maxChainVariableExpandSize = 3
-
 rule1 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule1 sol ((BL [B x y], BL [B x' y']):gamma) = Just (sol, ((V x, V x'):(V y, V y'):gamma))
 rule1 sol _ = Nothing

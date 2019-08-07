@@ -63,6 +63,17 @@ twoBrachchesOneInvalid =
       (unification [(BL [B testConcreteX testMetaY, B testMetaY testMetaZ], BL [B testConcreteY testMetaZ, B testMetaZ testMetaX])])
   )
 
+chainVariableTwoValidBranches =
+  TestCase (
+    assertEqual
+      ""
+      [
+        [(testMetaZ, testConcreteX), (testMetaY, testConcreteX), ((Meta "CVtest1"), testMetaY), (testMetaX, testMetaZ)]
+      , [((Meta "CVtest1"), testMetaZ), (testMetaX, testConcreteX)]
+      ]
+      (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaZ testMetaY])])
+  )
+
 testsUnification =
   TestList [
     TestLabel "unification_test1" twoIndependentEquations
@@ -72,6 +83,7 @@ testsUnification =
     , TestLabel "unification_test5" emptyProblem
     , TestLabel "unification_test6" twoBrachchesBothValid
     , TestLabel "unification_test7" twoBrachchesOneInvalid
+    , TestLabel "unification_test8" chainVariableTwoValidBranches
   ]
 
 main = do

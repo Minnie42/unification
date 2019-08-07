@@ -1,6 +1,10 @@
 module Util where
 import Types
 
+maxChainVariableExpandSize :: Int
+maxChainVariableExpandSize = 3
+
+
 applySubstitutionToMeta :: (Var, Var) -> Var -> Var
 applySubstitutionToMeta (Meta x, subVar) (Meta var)
   | var == x = subVar
@@ -35,6 +39,9 @@ isEquationSolved (side1, side2) = side1 == side2
 isProblemSolved :: Problem -> Bool
 isProblemSolved problem = foldl (&&) True (map isEquationSolved problem)
 
+expandChainVariable :: Bind -> Int -> [Bind]
+expandChainVariable cv expandSize = reverse (expandChainVariableReverse cv expandSize)
+
 expandChainVariableReverse :: Bind -> Int -> [Bind]
 expandChainVariableReverse (CV _ startVar endVar) 1 = [B startVar endVar]
 expandChainVariableReverse (CV name startVar endVar) expandSize = 
@@ -43,12 +50,17 @@ expandChainVariableReverse (CV name startVar endVar) expandSize =
   where
     newEndVar = Meta ("CV" ++ name ++ (show (expandSize - 1)))
 
-
-expandChainVariable :: Bind -> Int -> [Bind]
-expandChainVariable cv expandSize = reverse (expandChainVariableReverse cv expandSize)
-
-
-
+expandAllChainVariablesInGamma :: Problem -> [Problem]
+expandAllChainVariablesInGamma gamma = undefined
+  
+expandAllChainVariablesInGammaIterate :: Problem -> Problem -> [Problem]
+expandAllChainVariablesInGammaIterate pendingEquations doneEquations = undefined
+  
+expandChainVariablesInBinds :: [Bind] -> [[Bind]]
+expandChainVariablesInBinds [] = [[]]
+expandChainVariablesInBinds ((B var1 var2):binds) = map ((B var1 var2):) (expandChainVariablesInBinds binds)
+expandChainVariablesInBinds ((CV name var1 var2):binds) = 
+  foldl (++) [] [map ((expandChainVariable (CV name var1 var2) expandSize)++) (expandChainVariablesInBinds binds) | expandSize <- [1..maxChainVariableExpandSize]]
 
 
 
