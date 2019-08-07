@@ -804,7 +804,75 @@ rule9EquationWithVarOnEachSide =
           ((V testVar, V testVar):testGamma)
       )
   )
+-------------------------------
+-- Rule 10 --------------------
+-------------------------------
+rule10EquationWithBindWithChainVariable =
+  TestCase (
+    assertEqual
+      "Equation with bind with chain variable should expand the chain variable correctly."
+      [
+        (testSol, ((BL ((B testMetaX testMetaY):testBinds), BL testBinds):testGamma))
+      , (testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds), BL testBinds):testGamma))
+      , (testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds), BL testBinds):testGamma))
+      ]
+      (take 3 (unJust (
+        rule10 
+          testSol 
+          ((BL ((CV "test" testMetaX testMetaY):testBinds), BL testBinds):testGamma)
+      )))
+  )
 
+rule10EquationWithBindWithoutChainVariable =
+  TestCase (
+    assertEqual
+      "Equation with two binds without chain variable should resolve to nothing."
+      Nothing
+      (rule10 testSol ((BL testBinds, BL testBinds):testGamma))
+  )
+  
+rule10EquationWithTwoVars =
+  TestCase (
+    assertEqual
+      "Equation with two vars should resolve to nothing."
+      Nothing
+      (rule10 testSol ((V testVar, V testVar):testGamma))
+  )
+
+-------------------------------
+-- Rule 11 --------------------
+-------------------------------
+rule11EquationWithBindWithChainVariable =
+  TestCase (
+    assertEqual
+      "Equation with bind with chain variable should expand the chain variable correctly."
+      [
+        (testSol, ((BL testBinds, BL ((B testMetaX testMetaY):testBinds)):testGamma))
+      , (testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds)):testGamma))
+      , (testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds)):testGamma))
+      ]
+      (take 3 (unJust (
+        rule11 
+          testSol 
+          ((BL testBinds, BL ((CV "test" testMetaX testMetaY):testBinds)):testGamma)
+      )))
+  )
+
+rule11EquationWithBindWithoutChainVariable =
+  TestCase (
+    assertEqual
+      "Equation with two binds without chain variable should resolve to nothing."
+      Nothing
+      (rule11 testSol ((BL testBinds, BL testBinds):testGamma))
+  )
+  
+rule11EquationWithTwoVars =
+  TestCase (
+    assertEqual
+      "Equation with two vars should resolve to nothing."
+      Nothing
+      (rule11 testSol ((V testVar, V testVar):testGamma))
+  )
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -903,6 +971,20 @@ testsRule9 =
     , TestLabel "rule9_test5" rule9EquationWithVarOnEachSide
   ]
 
+testsRule10 =
+  TestList[
+    TestLabel "rule10_test1" rule10EquationWithBindWithChainVariable
+    , TestLabel "rule10_test2" rule10EquationWithBindWithoutChainVariable
+    , TestLabel "rule10_test3" rule10EquationWithTwoVars
+  ]
+  
+testsRule11 =
+  TestList[
+    TestLabel "rule11_test1" rule11EquationWithBindWithChainVariable
+    , TestLabel "rule11_test2" rule11EquationWithBindWithoutChainVariable
+    , TestLabel "rule11_test3" rule11EquationWithTwoVars
+  ]
+
 main = do
   putStrLn "Rule1"
   runTestTT testsRule1
@@ -930,4 +1012,10 @@ main = do
   putStrLn ""
   putStrLn "Rule9"
   runTestTT testsRule9
+  putStrLn ""
+  putStrLn "Rule10"
+  runTestTT testsRule10
+  putStrLn ""
+  putStrLn "Rule11"
+  runTestTT testsRule11
   putStrLn ""

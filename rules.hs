@@ -2,6 +2,8 @@ module Rules where
 import Types
 import Util
 
+maxChainVariableExpandSize = 3
+
 rule1 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule1 sol ((BL [B x y], BL [B x' y']):gamma) = Just (sol, ((V x, V x'):(V y, V y'):gamma))
 rule1 sol _ = Nothing
@@ -65,5 +67,29 @@ rule8 sol _ = Nothing
 rule9 :: Maybe Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule9 sol ((BL [], BL []):gamma) = Just (sol, gamma)
 rule9 sol _ = Nothing
+
+rule10 :: Maybe Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
+rule10 sol ((BL ((CV name var1 var2):leftBinds), BL rightBinds):gamma) = 
+  Just [(sol, (BL ((expandChainVariable (CV name var1 var2) expandSize) ++ leftBinds), BL rightBinds):gamma) | expandSize <- [1..maxChainVariableExpandSize]] 
+rule10 sol _ = Nothing
+
+rule11 :: Maybe Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
+rule11 sol ((BL leftBinds, BL ((CV name var1 var2):rightBinds)):gamma) = 
+  Just [(sol, ((BL leftBinds, BL ((expandChainVariable (CV name var1 var2) expandSize) ++ rightBinds)):gamma)) | expandSize <- [1..maxChainVariableExpandSize]] 
+rule11 sol _ = Nothing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

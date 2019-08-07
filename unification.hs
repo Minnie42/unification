@@ -55,8 +55,17 @@ recursiveUnification ((sol, problem):problems) sols 5
   where
     next = rule5 sol problem      
 recursiveUnification ((sol, problem):problems) sols 6
-  | next == Nothing = error "no rule matched, check your input"
+  | next == Nothing = recursiveUnification ((sol, problem):problems) sols 10
   | otherwise = recursiveUnification ((unJust next) ++ problems) sols startRule
   where
     next = rule6 sol problem
-
+recursiveUnification ((sol, problem):problems) sols 10
+  | next == Nothing = recursiveUnification ((sol, problem):problems) sols 11
+  | otherwise = recursiveUnification ((unJust next) ++ problems) sols startRule
+  where
+    next = rule10 sol problem
+recursiveUnification ((sol, problem):problems) sols 11
+  | next == Nothing = error "No rule applied. Check your input."
+  | otherwise = recursiveUnification ((unJust next) ++ problems) sols startRule
+  where
+    next = rule11 sol problem

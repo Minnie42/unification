@@ -228,7 +228,26 @@ emptyProblem =
       True
       (isProblemSolved [])
   )
-  
+
+-----------------------------------
+-- expandChainVariable ------------
+-----------------------------------
+chainVariableThatExpands =
+  TestCase (
+    assertEqual
+      "Chain variable should expand correctly."
+      [B testMetaX (Meta "CVA1"), B (Meta "CVA1") (Meta "CVA2"), B (Meta "CVA2") testMetaY]
+      (expandChainVariable (CV "A" testMetaX testMetaY) 3)
+  )
+
+chainVariableThatNotExpands =
+  TestCase (
+    assertEqual
+      "Given a chain size of one the chain variable should be converted to a bind."
+      [B testMetaX testMetaY]
+      (expandChainVariable (CV "A" testMetaX testMetaY) 1)
+  )
+ 
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -288,6 +307,12 @@ testsIsProblemSolved =
     , TestLabel "isProblemSolved_test3" emptyProblem
   ]
 
+testsExpandChainVariable =
+  TestList [
+    TestLabel "expandChainVariable_test1" chainVariableThatExpands
+    , TestLabel "expandChainVariable_test2" chainVariableThatNotExpands
+  ]
+
 main = do
   putStrLn "applySubstitutionToMeta"
   runTestTT testsApplySubstitutionToMeta
@@ -312,6 +337,9 @@ main = do
   putStrLn ""
   putStrLn "isProblemSolved"
   runTestTT testsIsProblemSolved
+  putStrLn ""
+  putStrLn "expandChainVariable"
+  runTestTT testsExpandChainVariable
   putStrLn ""
   
  

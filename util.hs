@@ -34,3 +34,32 @@ isEquationSolved (side1, side2) = side1 == side2
 
 isProblemSolved :: Problem -> Bool
 isProblemSolved problem = foldl (&&) True (map isEquationSolved problem)
+
+expandChainVariableReverse :: Bind -> Int -> [Bind]
+expandChainVariableReverse (CV _ startVar endVar) 1 = [B startVar endVar]
+expandChainVariableReverse (CV name startVar endVar) expandSize = 
+  (B newEndVar endVar)
+  :(expandChainVariableReverse (CV name startVar newEndVar) (expandSize - 1))
+  where
+    newEndVar = Meta ("CV" ++ name ++ (show (expandSize - 1)))
+
+
+expandChainVariable :: Bind -> Int -> [Bind]
+expandChainVariable cv expandSize = reverse (expandChainVariableReverse cv expandSize)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -46,6 +46,9 @@ testBindC = B testVarX testVarY
 testBindD :: Bind
 testBindD = B testVarY testVarX
 
+testBinds :: [Bind]
+testBinds = []
+
 testGamma :: Problem
 testGamma = []
 
