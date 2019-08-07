@@ -202,6 +202,33 @@ unJustApplies =
   where
     value = 10
 
+-----------------------------------
+-- isProblemSolved ----------------
+-----------------------------------
+solvedProblem =
+  TestCase (
+    assertEqual
+      "A solved problem should return true."
+      True
+      (isProblemSolved [(V testMetaX, V testMetaX)])
+  )
+
+unsolvedProblem =
+  TestCase (
+    assertEqual
+      "A unsolved problem should return false."
+      False
+      (isProblemSolved [(V testMetaY, V testMetaX)])
+  )
+  
+emptyProblem =
+  TestCase (
+    assertEqual
+      "An empty problem should return true."
+      True
+      (isProblemSolved [])
+  )
+  
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -254,6 +281,13 @@ testsUnJust =
     TestLabel "unJust_test1" unJustApplies
   ]
 
+testsIsProblemSolved =
+  TestList [
+    TestLabel "isProblemSolved_test1" solvedProblem
+    , TestLabel "isProblemSolved_test2" unsolvedProblem
+    , TestLabel "isProblemSolved_test3" emptyProblem
+  ]
+
 main = do
   putStrLn "applySubstitutionToMeta"
   runTestTT testsApplySubstitutionToMeta
@@ -276,4 +310,8 @@ main = do
   putStrLn "unJust"
   runTestTT testsUnJust
   putStrLn ""
+  putStrLn "isProblemSolved"
+  runTestTT testsIsProblemSolved
+  putStrLn ""
+  
  

@@ -28,3 +28,9 @@ applySolutionToGamma sol gamma = applySolutionToGamma (init sol) (applySubstitut
 
 unJust :: (Maybe a) -> a
 unJust (Just value) = value
+
+isEquationSolved :: Equation -> Bool
+isEquationSolved (side1, side2) = side1 == side2
+
+isProblemSolved :: Problem -> Bool
+isProblemSolved problem = foldl (&&) True (map isEquationSolved problem)
