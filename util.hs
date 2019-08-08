@@ -14,6 +14,8 @@ applySubstitutionToMeta _ var = var
 applySubstitutionToBind :: (Var, Var) -> Bind -> Bind
 applySubstitutionToBind substitution (B var1 var2) = 
   B (applySubstitutionToMeta substitution var1) (applySubstitutionToMeta substitution var2)
+applySubstitutionToBind substitution (CV name var1 var2) =
+  CV name (applySubstitutionToMeta substitution var1) (applySubstitutionToMeta substitution var2) 
 
 applySubstitutionToSide :: (Var, Var) -> Side -> Side
 applySubstitutionToSide substitution (V var) = V (applySubstitutionToMeta substitution var)
@@ -49,6 +51,10 @@ expandChainVariableReverse (CV name startVar endVar) expandSize =
   :(expandChainVariableReverse (CV name startVar newEndVar) (expandSize - 1))
   where
     newEndVar = Meta ("CV" ++ name ++ (show (expandSize - 1)))
+
+
+
+
 
 expandAllChainVariablesInGamma :: Problem -> [Problem]
 expandAllChainVariablesInGamma gamma = undefined

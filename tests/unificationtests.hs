@@ -66,12 +66,22 @@ twoBrachchesOneInvalid =
 chainVariableTwoValidBranches =
   TestCase (
     assertEqual
-      ""
+      "After the expansion of the chain variable all valid branches should be calculated correctly."
       [
         [(testMetaZ, testConcreteX), (testMetaY, testConcreteX), ((Meta "CVtest1"), testMetaY), (testMetaX, testMetaZ)]
       , [((Meta "CVtest1"), testMetaZ), (testMetaX, testConcreteX)]
       ]
       (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaZ testMetaY])])
+  )
+
+chainVariableOneInvalidBranches =
+  TestCase (
+    assertEqual
+      "After the expansion of the chain variable all invalid branches should be removed correctly."
+      [
+        [(testMetaY, testConcreteY), (testMetaZ, testConcreteX), (Meta "CVtest1", testMetaZ), (testMetaX, testConcreteX)]
+      ]
+      (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaX testConcreteY])])
   )
 
 testsUnification =
@@ -84,6 +94,7 @@ testsUnification =
     , TestLabel "unification_test6" twoBrachchesBothValid
     , TestLabel "unification_test7" twoBrachchesOneInvalid
     , TestLabel "unification_test8" chainVariableTwoValidBranches
+    , TestLabel "unification_test9" chainVariableOneInvalidBranches
   ]
 
 main = do
