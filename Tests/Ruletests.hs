@@ -15,7 +15,7 @@ rule1EquationEachSideBindOfSizeOne =
       \ the right bind with the second variable of the left bind."
       (Just 
         (
-          testSol
+          Just testSol
         , (V testVarX, V testVarX):(V testVarY, V testVarY):testGamma
         ) 
       )
@@ -93,7 +93,7 @@ rule2EquationWithTwoIdenticalConcretes =
   TestCase (
     assertEqual
       "An equation with two identical concretes should be removed."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule2 
           testSol 
@@ -105,7 +105,7 @@ rule2EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
       "An equation with two identical metas should be removed."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule2 
           testSol 
@@ -280,12 +280,10 @@ rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight =
       )
       (
         rule4 
-          (Just testSol) 
+          testSol 
           ((V testMetaX, V testConcreteX):testGamma)
       )
   )
-  where
-    testSol = []
 
 rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
   TestCase (
@@ -300,13 +298,10 @@ rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
       )
       (
         rule4 
-          (Just testSol) 
+          testSol
           ((V testConcreteX, V testMetaX):testGamma)
       )
   )
-  where
-    testSol = []
-
 
 rule4EquationWithTwoMetas =
   TestCase (
@@ -359,12 +354,10 @@ rule5EquationWithTwoDiffentMetas =
       )
       (
         rule5 
-          (Just testSol) 
+          testSol
           ((V testMetaX, V testMetaY):testGamma)
       )
   )
-  where
-    testSol = []
 
 rule5EquationWithTwoIdenticalMetas =
   TestCase (
@@ -448,11 +441,11 @@ rule6EquationWithBindsGreaterThenOneOnBothSides =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL [testBindD]):testGamma
           )
         , (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindD]):(BL [testBindB], BL [testBindC]):testGamma
           )  
         ]
@@ -472,11 +465,11 @@ rule6EquationWithBindOfSizeTwoOnRightSide =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [], BL [testBindD]):testGamma
           )
         , (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindD]):(BL [], BL [testBindC]):testGamma
           )  
         ]
@@ -496,7 +489,7 @@ rule6EquationWithBindOfSizeTwoOnLeftSide =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL []):testGamma
           )
         ] 
@@ -749,7 +742,7 @@ rule9EquationWithTwoBindsOfSizeZero =
   TestCase (
     assertEqual
       "An equation with two binds of size zero should ."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule9
           testSol 

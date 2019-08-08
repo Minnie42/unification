@@ -1,8 +1,8 @@
 import Test.HUnit
+import Test.Stats
 import Types
 import Util
 import Tests.DummyVariables
-
 
 -----------------------------------
 -- applySubstitutionToMeta --------
@@ -288,30 +288,13 @@ testsIsProblemSolved =
     , TestLabel "isProblemSolved_test3" emptyProblem
   ]
 
-main = do
-  putStrLn "applySubstitutionToMeta"
-  runTestTT testsApplySubstitutionToMeta
-  putStrLn ""
-  putStrLn "applySubstitutionToBind"
-  runTestTT testsApplySubstitutionToBind
-  putStrLn ""
-  putStrLn "applySubstitutionToSide"
-  runTestTT testsApplySubstitutionToSide
-  putStrLn ""
-  putStrLn "applySubstitutionToEquation"
-  runTestTT testsApplySubstitutionToEquation
-  putStrLn ""
-  putStrLn "applySubstitutionToGamma"
-  runTestTT testsApplySubstitutionToGamma
-  putStrLn ""
-  putStrLn "applySolutionToGamma"
-  runTestTT testsApplySolutionToGamma
-  putStrLn ""
-  putStrLn "unJust"
-  runTestTT testsUnJust
-  putStrLn ""
-  putStrLn "isProblemSolved"
-  runTestTT testsIsProblemSolved
-  putStrLn ""
-  
- 
+main = combineTests [
+  (testsApplySubstitutionToMeta, "applySubstitutionToMeta")
+  , (testsApplySubstitutionToBind, "applySubstitutionToBind")
+  , (testsApplySubstitutionToSide, "applySubstitutionToSide")
+  , (testsApplySubstitutionToEquation, "applySubstitutionToEquation")
+  , (testsApplySubstitutionToGamma, "applySubstitutionToGamma")
+  , (testsApplySolutionToGamma, "applySolutionToGamma")
+  , (testsUnJust, "unJust")
+  , (testsIsProblemSolved, "isProblemSolved")
+  ]

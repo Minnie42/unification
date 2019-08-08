@@ -49,5 +49,5 @@ testBindD = B testVarY testVarX
 testGamma :: Problem
 testGamma = []
 
-testSol :: Maybe Sol
-testSol = Just []
+testSol :: Sol
+testSol = []
