@@ -52,10 +52,6 @@ expandChainVariableReverse (CV name startVar endVar) expandSize =
   where
     newEndVar = Meta ("CV" ++ name ++ (show (expandSize - 1)))
 
-
-
-
-
 expandAllChainVariablesInGamma :: Problem -> [Problem]
 expandAllChainVariablesInGamma gamma = undefined
   

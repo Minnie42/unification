@@ -60,6 +60,14 @@ noSubstitutionInBind =
       (applySubstitutionToBind (testMetaX, testConcreteY) (B testMetaY testMetaY))
   )
 
+substitutionInChainVariable =
+  TestCase (
+    assertEqual
+      "Given a Substitution that applies in the given chain variable the substitution should apply."
+      (CV "test" testConcreteY testMetaY)
+      (applySubstitutionToBind (testMetaX, testConcreteY) (CV "test" testMetaX testMetaY))
+  )
+
 -----------------------------------
 -- applySubstitutionToSide --------
 -----------------------------------
@@ -287,6 +295,7 @@ testsApplySubstitutionToBind =
   TestList [
     TestLabel "applySubstitutionToBind_test1" substitutionInBind
     , TestLabel "applySubstitutionToBind_test2" noSubstitutionInBind
+    , TestLabel "applySubstitutionToBind_test3" substitutionInChainVariable
   ]
 
 testsApplySubstitutionToSide =

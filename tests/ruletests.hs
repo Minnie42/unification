@@ -15,7 +15,7 @@ rule1EquationEachSideBindOfSizeOne =
       \ the right bind with the second variable of the left bind."
       (Just 
         (
-          testSol
+          Just testSol
         , (V testVarX, V testVarX):(V testVarY, V testVarY):testGamma
         ) 
       )
@@ -93,7 +93,7 @@ rule2EquationWithTwoIdenticalConcretes =
   TestCase (
     assertEqual
       "An equation with two identical concretes should be removed."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule2 
           testSol 
@@ -105,7 +105,7 @@ rule2EquationWithTwoIdenticalMetas =
   TestCase (
     assertEqual
       "An equation with two identical metas should be removed."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule2 
           testSol 
@@ -280,12 +280,10 @@ rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight =
       )
       (
         rule4 
-          (Just testSol) 
+          testSol 
           ((V testMetaX, V testConcreteX):testGamma)
       )
   )
-  where
-    testSol = []
 
 rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
   TestCase (
@@ -300,13 +298,10 @@ rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
       )
       (
         rule4 
-          (Just testSol) 
+          testSol 
           ((V testConcreteX, V testMetaX):testGamma)
       )
   )
-  where
-    testSol = []
-
 
 rule4EquationWithTwoMetas =
   TestCase (
@@ -359,12 +354,10 @@ rule5EquationWithTwoDiffentMetas =
       )
       (
         rule5 
-          (Just testSol) 
+          testSol
           ((V testMetaX, V testMetaY):testGamma)
       )
   )
-  where
-    testSol = []
 
 rule5EquationWithTwoIdenticalMetas =
   TestCase (
@@ -448,11 +441,11 @@ rule6EquationWithBindsGreaterThenOneOnBothSides =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL [testBindD]):testGamma
           )
         , (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindD]):(BL [testBindB], BL [testBindC]):testGamma
           )  
         ]
@@ -472,11 +465,11 @@ rule6EquationWithBindOfSizeTwoOnRightSide =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [], BL [testBindD]):testGamma
           )
         , (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindD]):(BL [], BL [testBindC]):testGamma
           )  
         ]
@@ -496,7 +489,7 @@ rule6EquationWithBindOfSizeTwoOnLeftSide =
       (
         Just [
           (
-            testSol
+            Just testSol
           , (BL [testBindA], BL [testBindC]):(BL [testBindB], BL []):testGamma
           )
         ] 
@@ -565,6 +558,30 @@ rule6EquationWithTwoVariables =
         rule6
           testSol 
           ((V testVar, V testVar):testGamma)
+      )
+  )
+
+rule6EquationWithBindsThatStartsWithCVLeft =
+  TestCase (
+    assertEqual
+      "An equation that has a list of binds that starts with a chain variable on the left side should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [testCV, testBindB], BL [testBindC]):testGamma)
+      )
+  )
+
+rule6EquationWithBindsThatStartsWithCVRight =
+  TestCase (
+    assertEqual
+      "An equation that has a list of binds that starts with a chain variable on the right side should resolve to nothing."
+      Nothing
+      (
+        rule6
+          testSol 
+          ((BL [testBindB], BL [testCV, testBindC]):testGamma)
       )
   )
 
@@ -749,7 +766,7 @@ rule9EquationWithTwoBindsOfSizeZero =
   TestCase (
     assertEqual
       "An equation with two binds of size zero should ."
-      (Just (testSol, testGamma))
+      (Just (Just testSol, testGamma))
       (
         rule9
           testSol 
@@ -812,9 +829,9 @@ rule10EquationWithBindWithChainVariable =
     assertEqual
       "Equation with bind with chain variable should expand the chain variable correctly."
       [
-        (testSol, ((BL ((B testMetaX testMetaY):testBinds), BL testBinds):testGamma))
-      , (testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds), BL testBinds):testGamma))
-      , (testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds), BL testBinds):testGamma))
+        (Just testSol, ((BL ((B testMetaX testMetaY):testBinds), BL testBinds):testGamma))
+      , (Just testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds), BL testBinds):testGamma))
+      , (Just testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds), BL testBinds):testGamma))
       ]
       (take 3 (unJust (
         rule10 
@@ -847,9 +864,9 @@ rule11EquationWithBindWithChainVariable =
     assertEqual
       "Equation with bind with chain variable should expand the chain variable correctly."
       [
-        (testSol, ((BL testBinds, BL ((B testMetaX testMetaY):testBinds)):testGamma))
-      , (testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds)):testGamma))
-      , (testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds)):testGamma))
+        (Just testSol, ((BL testBinds, BL ((B testMetaX testMetaY):testBinds)):testGamma))
+      , (Just testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds)):testGamma))
+      , (Just testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds)):testGamma))
       ]
       (take 3 (unJust (
         rule11 
@@ -940,6 +957,9 @@ testsRule6 =
     , TestLabel "rule6_test6" rule6EquationWithTwoBindsOfSizeOne
     , TestLabel "rule6_test7" rule6EquationWithTwoBindsOfSizeZero
     , TestLabel "rule6_test8" rule6EquationWithTwoVariables
+    , TestLabel "rule6_test9" rule6EquationWithBindsThatStartsWithCVLeft
+    , TestLabel "rule6_test10" rule6EquationWithBindsThatStartsWithCVRight
+    
   ]
 
 testsRule7 = 

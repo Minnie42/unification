@@ -46,11 +46,14 @@ testBindC = B testVarX testVarY
 testBindD :: Bind
 testBindD = B testVarY testVarX
 
+testCV :: Bind
+testCV = CV "test" testVar testVar
+
 testBinds :: [Bind]
 testBinds = []
 
 testGamma :: Problem
 testGamma = []
 
-testSol :: Maybe Sol
-testSol = Just []
+testSol :: Sol
+testSol = []
