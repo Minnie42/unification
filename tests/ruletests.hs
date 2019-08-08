@@ -959,7 +959,6 @@ testsRule6 =
     , TestLabel "rule6_test8" rule6EquationWithTwoVariables
     , TestLabel "rule6_test9" rule6EquationWithBindsThatStartsWithCVLeft
     , TestLabel "rule6_test10" rule6EquationWithBindsThatStartsWithCVRight
-    
   ]
 
 testsRule7 = 
