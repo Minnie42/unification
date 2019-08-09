@@ -1,4 +1,5 @@
 import Test.HUnit
+import Test.Stats
 import Types
 import Rules
 import Util
@@ -896,31 +897,14 @@ testsRule9 =
     , TestLabel "rule9_test5" rule9EquationWithVarOnEachSide
   ]
 
-main = do
-  putStrLn "Rule1"
-  runTestTT testsRule1
-  putStrLn ""
-  putStrLn "Rule2"
-  runTestTT testsRule2
-  putStrLn ""
-  putStrLn "Rule3"
-  runTestTT testsRule3
-  putStrLn ""
-  putStrLn "Rule4"
-  runTestTT testsRule4
-  putStrLn ""
-  putStrLn "Rule5"
-  runTestTT testsRule5
-  putStrLn ""
-  putStrLn "Rule6"
-  runTestTT testsRule6
-  putStrLn ""
-  putStrLn "Rule7"
-  runTestTT testsRule7
-  putStrLn ""
-  putStrLn "Rule8"
-  runTestTT testsRule8
-  putStrLn ""
-  putStrLn "Rule9"
-  runTestTT testsRule9
-  putStrLn ""
+main = combineTests [
+  (testsRule1, "rule1")
+  , (testsRule2, "rule2")
+  , (testsRule3, "rule3")
+  , (testsRule4, "rule4")
+  , (testsRule5, "rule5")
+  , (testsRule6, "rule6")
+  , (testsRule7, "rule7")
+  , (testsRule8, "rule8")
+  , (testsRule9, "rule9")
+  ]

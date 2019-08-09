@@ -1,4 +1,5 @@
 import Test.HUnit
+import Test.Stats
 import Types
 import Unification
 import Tests.DummyVariables
@@ -74,7 +75,6 @@ testsUnification =
     , TestLabel "unification_test7" twoBrachchesOneInvalid
   ]
 
-main = do
-  putStrLn "unification"
-  runTestTT testsUnification
-  putStrLn ""
+main = combineTests [
+  (testsUnification, "unification")
+  ]
