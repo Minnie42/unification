@@ -75,19 +75,3 @@ rule11 :: Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
 rule11 sol ((BL leftBinds, BL ((CV name var1 var2):rightBinds)):gamma) = 
   Just [(Just sol, ((BL leftBinds, BL ((expandChainVariable (CV name var1 var2) expandSize) ++ rightBinds)):gamma)) | expandSize <- [1..maxChainVariableExpandSize]] 
 rule11 sol _ = Nothing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
