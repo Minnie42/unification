@@ -9,7 +9,7 @@ twoIndependentEquations =
   TestCase (
     assertEqual
       "Two independent equations should be handeled seperately correctly."
-      [[(testMetaX, testMetaY)]]
+      [[(Sub testMetaX testMetaY)]]
       (unification [(V testMetaX, V testMetaY), (V testConcreteX, V testConcreteX)])
   )
 
@@ -18,7 +18,7 @@ twoDependentEquations =
     assertEqual
       "Given two dependent equations, the first one should be handeled correctly and the second one\
       \ should be handeled correctly considering the previous changes."
-      [[(testMetaY, testConcreteX), (testMetaX, testMetaY)]]
+      [[(Sub testMetaY testConcreteX), (Sub testMetaX testMetaY)]]
       (unification [(V testMetaX, V testMetaY), (V testMetaX, V testConcreteX)])
   )
 
@@ -27,7 +27,7 @@ cyclicalEquations =
     assertEqual
       "Given cyclical equations, the first equation should be handeled correctly and the others\
       \ should be handeled correctly considering the previous changes."
-      [[(testMetaY, testMetaZ), (testMetaX, testMetaY)]]
+      [[(Sub testMetaY testMetaZ), (Sub testMetaX testMetaY)]]
       (unification [(V testMetaX, V testMetaY), (V testMetaY, V testMetaZ), (V testMetaZ, V testMetaX)])
   )
 
@@ -52,7 +52,7 @@ twoBrachchesBothValid =
   TestCase (
     assertEqual
       "A problem with two valid solutions should return both."
-      [[(testMetaY, testMetaZ), (testMetaX, testMetaZ)], [(testMetaX, testMetaZ), (testMetaY, testMetaX)]]
+      [[(Sub testMetaY testMetaZ), (Sub testMetaX testMetaZ)], [(Sub testMetaX testMetaZ), (Sub testMetaY testMetaX)]]
       (unification [(BL [B testMetaX testMetaY, B testMetaY testMetaZ], BL [B testMetaX testMetaX, B testMetaZ testMetaX])])
   )
 
@@ -60,7 +60,7 @@ twoBrachchesOneInvalid =
   TestCase (
     assertEqual
       "This test covers the removing of invaled branches."
-      [[(testMetaX, testConcreteY), (testMetaY, testMetaX), (testMetaZ, testConcreteX)]]
+      [[(Sub testMetaX testConcreteY), (Sub testMetaY testMetaX), (Sub testMetaZ testConcreteX)]]
       (unification [(BL [B testConcreteX testMetaY, B testMetaY testMetaZ], BL [B testConcreteY testMetaZ, B testMetaZ testMetaX])])
   )
 
@@ -69,8 +69,8 @@ chainVariableTwoValidBranches =
     assertEqual
       "After the expansion of the chain variable all valid branches should be calculated correctly."
       [
-        [(testMetaZ, testConcreteX), (testMetaY, testConcreteX), ((Meta "CVtest1"), testMetaY), (testMetaX, testMetaZ)]
-      , [((Meta "CVtest1"), testMetaZ), (testMetaX, testConcreteX)]
+        [(Sub testMetaZ testConcreteX), (Sub testMetaY testConcreteX), (Sub (Meta "CVtest1") testMetaY), (Sub testMetaX testMetaZ), (Exp "test" 2)]
+      , [(Sub (Meta "CVtest1") testMetaZ), (Sub testMetaX testConcreteX), (Exp "test" 2)]
       ]
       (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaZ testMetaY])])
   )
@@ -80,7 +80,7 @@ chainVariableOneInvalidBranches =
     assertEqual
       "After the expansion of the chain variable all invalid branches should be removed correctly."
       [
-        [(testMetaY, testConcreteY), (testMetaZ, testConcreteX), (Meta "CVtest1", testMetaZ), (testMetaX, testConcreteX)]
+        [(Sub testMetaY testConcreteY), (Sub testMetaZ testConcreteX), (Sub (Meta "CVtest1") testMetaZ), (Sub testMetaX testConcreteX), (Exp "test" 2)]
       ]
       (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaX testConcreteY])])
   )

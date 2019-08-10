@@ -6,4 +6,4 @@ type Problem = [Equation]
 type Equation = (Side, Side)
 data Side = BL [Bind] | V Var deriving(Show, Eq)
 type Sol = [SolEntry] 
-data SolEntry = Sub Var Var | Exp String Int
+data SolEntry = Sub Var Var | Exp String Int deriving(Show, Eq)

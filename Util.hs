@@ -11,30 +11,32 @@ applySubstitutionToMeta (Sub (Meta x) subVar) (Meta var)
   | otherwise = Meta var
 applySubstitutionToMeta _ var = var
 
-applySubstitutionToBind :: SolEntry -> Bind -> [Bind]
-applySubstitutionToBind (Sub subVar1 subVar2) (B var1 var2) = 
+applySolEntryToBind :: SolEntry -> Bind -> [Bind]
+applySolEntryToBind (Sub subVar1 subVar2) (B var1 var2) = 
   [B (applySubstitutionToMeta (Sub subVar1 subVar2) var1) (applySubstitutionToMeta (Sub subVar1 subVar2) var2)]
-applySubstitutionToBind (Sub subVar1 subVar2) (CV name var1 var2) =
+applySolEntryToBind (Sub subVar1 subVar2) (CV name var1 var2) =
   [CV name (applySubstitutionToMeta (Sub subVar1 subVar2) var1) (applySubstitutionToMeta (Sub subVar1 subVar2) var2)]
-applySubstitutionToBind (Exp expName expSize) (CV name startVar endVar)
+applySolEntryToBind (Exp expName expSize) (CV name startVar endVar)
   | expName == name = expandChainVariable (CV name startVar endVar) expSize
   | otherwise = [CV name startVar endVar]
-applySubstitutionToBind _ bind = [bind]
+applySolEntryToBind _ bind = [bind]
 
-applySubstitutionToSide :: SolEntry -> Side -> Side
-applySubstitutionToSide substitution (V var) = V (applySubstitutionToMeta substitution var)
-applySubstitutionToSide substitution (BL binds) = BL (concat (map (applySubstitutionToBind substitution) binds))
+applySolEntryToSide :: SolEntry -> Side -> Side
+applySolEntryToSide substitution (V var) = V (applySubstitutionToMeta substitution var)
+applySolEntryToSide substitution (BL binds) = BL (concat (map (applySolEntryToBind substitution) binds))
 
-applySubstitutionToEquation :: SolEntry -> Equation -> Equation
-applySubstitutionToEquation substitution (side1, side2) = 
-  (applySubstitutionToSide substitution side1, applySubstitutionToSide substitution side2)
+applySolEntryToEquation :: SolEntry -> Equation -> Equation
+applySolEntryToEquation substitution (side1, side2) = 
+  (applySolEntryToSide
+ substitution side1, applySolEntryToSide
+ substitution side2)
 
-applySubstitutionToGamma :: SolEntry -> Problem -> Problem
-applySubstitutionToGamma substitution gamma = map (applySubstitutionToEquation substitution) gamma
+applySolEntryToGamma :: SolEntry -> Problem -> Problem
+applySolEntryToGamma substitution gamma = map (applySolEntryToEquation substitution) gamma
 
 applySolutionToGamma :: Sol -> Problem -> Problem
 applySolutionToGamma [] gamma = gamma
-applySolutionToGamma sol gamma = applySolutionToGamma (init sol) (applySubstitutionToGamma (last sol) gamma)
+applySolutionToGamma sol gamma = applySolutionToGamma (init sol) (applySolEntryToGamma (last sol) gamma)
 
 unJust :: (Maybe a) -> a
 unJust (Just value) = value

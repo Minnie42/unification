@@ -20,14 +20,14 @@ rule3 sol _ = Nothing
 
 rule4 :: Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule4 sol ((V (Meta x), V (Concrete y)):gamma) = 
-  Just (Just ((Meta x, Concrete y):sol), applySubstitutionToGamma (Meta x, Concrete y) ((V (Meta x), V (Concrete y)):gamma))
+  Just (Just ((Sub (Meta x) (Concrete y)):sol), applySolEntryToGamma (Sub (Meta x) (Concrete y)) ((V (Meta x), V (Concrete y)):gamma))
 rule4 sol ((V (Concrete y), V (Meta x)):gamma) = 
-  Just (Just ((Meta x, Concrete y):sol), applySubstitutionToGamma (Meta x, Concrete y) ((V (Meta x), V (Concrete y)):gamma))
+  Just (Just ((Sub (Meta x) (Concrete y)):sol), applySolEntryToGamma (Sub (Meta x) (Concrete y)) ((V (Meta x), V (Concrete y)):gamma))
 rule4 sol _ = Nothing
 
 rule5 :: Sol -> Problem -> Maybe (Maybe Sol, Problem)
 rule5 sol ((V (Meta x), V (Meta y)):gamma) 
-  |x /= y = Just (Just ((Meta x, Meta y):sol), applySubstitutionToGamma (Meta x, Meta y) ((V (Meta x), V (Meta y)):gamma))
+  |x /= y = Just (Just ((Sub (Meta x) (Meta y)):sol), applySolEntryToGamma (Sub (Meta x) (Meta y)) ((V (Meta x), V (Meta y)):gamma))
   |otherwise = Nothing
 rule5 sol _ = Nothing
 
@@ -68,10 +68,25 @@ rule9 sol _ = Nothing
 
 rule10 :: Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
 rule10 sol ((BL ((CV name var1 var2):leftBinds), BL rightBinds):gamma) = 
-  Just [(Just sol, (BL ((expandChainVariable (CV name var1 var2) expandSize) ++ leftBinds), BL rightBinds):gamma) | expandSize <- [1..maxChainVariableExpandSize]] 
+  Just [
+    (
+      Just ((Exp name expandSize):sol)
+    , (
+        BL ((expandChainVariable (CV name var1 var2) expandSize) ++ leftBinds)
+      , BL rightBinds
+      ):(applySolEntryToGamma (Exp name expandSize) gamma)
+    ) | expandSize <- [1..maxChainVariableExpandSize]
+  ] 
 rule10 sol _ = Nothing
 
 rule11 :: Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
 rule11 sol ((BL leftBinds, BL ((CV name var1 var2):rightBinds)):gamma) = 
-  Just [(Just sol, ((BL leftBinds, BL ((expandChainVariable (CV name var1 var2) expandSize) ++ rightBinds)):gamma)) | expandSize <- [1..maxChainVariableExpandSize]] 
+  Just [
+    (
+      Just ((Exp name expandSize):sol)
+    , (
+        BL leftBinds
+      , BL ((expandChainVariable (CV name var1 var2) expandSize) ++ rightBinds)
+      ):(applySolEntryToGamma (Exp name expandSize) gamma)
+    ) | expandSize <- [1..maxChainVariableExpandSize]] 
 rule11 sol _ = Nothing

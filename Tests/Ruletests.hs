@@ -265,6 +265,7 @@ rule3EquationWithMetaOnTheLeftAndConcreteOnTheRight =
           ((V testMeta, V testConcrete):testGamma)
       )
   )
+
 -------------------------------
 -- Rule 4 ---------------------
 -------------------------------
@@ -275,8 +276,8 @@ rule4EquationWithMetaOnTheLeftAndConcreteOnTheRight =
       \ substitution from the meta variable to the concrete variable."
       (
         Just (
-          (Just ((testMetaX, testConcreteX):testSol))
-        , ((V testConcreteX, V testConcreteX):(applySubstitutionToGamma (testMetaX, testConcreteX) testGamma))
+          (Just ((Sub testMetaX testConcreteX):testSol))
+        , ((V testConcreteX, V testConcreteX):(applySolEntryToGamma (Sub testMetaX testConcreteX) testGamma))
         )
       )
       (
@@ -293,8 +294,8 @@ rule4EquationWithConcreteOnTheLeftAndMetaOnTheRight =
       \ substitution from the meta variable to the concrete variable."
       (
         Just (
-          (Just ((testMetaX, testConcreteX):testSol))
-        , ((V testConcreteX, V testConcreteX):(applySubstitutionToGamma (testMetaX, testConcreteX) testGamma))
+          (Just ((Sub testMetaX testConcreteX):testSol))
+        , ((V testConcreteX, V testConcreteX):(applySolEntryToGamma (Sub testMetaX testConcreteX) testGamma))
         )
       )
       (
@@ -349,8 +350,8 @@ rule5EquationWithTwoDiffentMetas =
       \ variable on the left of the equation to the meta variable on the right."
       (
         Just (
-          (Just ((testMetaX, testMetaY):testSol))
-        , ((V testMetaY, V testMetaY):(applySubstitutionToGamma (testMetaX, testMetaY) testGamma))
+          (Just ((Sub testMetaX testMetaY):testSol))
+        , ((V testMetaY, V testMetaY):(applySolEntryToGamma (Sub testMetaX testMetaY) testGamma))
         )
       )
       (
@@ -830,9 +831,9 @@ rule10EquationWithBindWithChainVariable =
     assertEqual
       "Equation with bind with chain variable should expand the chain variable correctly."
       [
-        (Just testSol, ((BL ((B testMetaX testMetaY):testBinds), BL testBinds):testGamma))
-      , (Just testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds), BL testBinds):testGamma))
-      , (Just testSol, ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds), BL testBinds):testGamma))
+        (Just ((Exp "test" 1):testSol), ((BL ((B testMetaX testMetaY):testBinds), BL testBinds):(applySolEntryToGamma (Exp "test" 1) testGamma)))
+      , (Just ((Exp "test" 2):testSol), ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds), BL testBinds):(applySolEntryToGamma (Exp "test" 2) testGamma)))
+      , (Just ((Exp "test" 3):testSol), ((BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds), BL testBinds):(applySolEntryToGamma (Exp "test" 3) testGamma)))
       ]
       (take 3 (unJust (
         rule10 
@@ -865,9 +866,9 @@ rule11EquationWithBindWithChainVariable =
     assertEqual
       "Equation with bind with chain variable should expand the chain variable correctly."
       [
-        (Just testSol, ((BL testBinds, BL ((B testMetaX testMetaY):testBinds)):testGamma))
-      , (Just testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds)):testGamma))
-      , (Just testSol, ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds)):testGamma))
+        (Just ((Exp "test" 1):testSol), ((BL testBinds, BL ((B testMetaX testMetaY):testBinds)):(applySolEntryToGamma (Exp "test" 1) testGamma)))
+      , (Just ((Exp "test" 2):testSol), ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") testMetaY):testBinds)):(applySolEntryToGamma (Exp "test" 2) testGamma)))
+      , (Just ((Exp "test" 3):testSol), ((BL testBinds, BL ((B testMetaX (Meta "CVtest1")):(B (Meta "CVtest1") (Meta "CVtest2")):(B (Meta "CVtest2") testMetaY):testBinds)):(applySolEntryToGamma (Exp "test" 3) testGamma)))
       ]
       (take 3 (unJust (
         rule11 

@@ -51,14 +51,14 @@ noSubstitutionWithExpansion =
   )
 
 -----------------------------------
--- applySubstitutionToBind --------
+-- applySolEntryToBind --------
 -----------------------------------
 substitutionInBind =
   TestCase (
     assertEqual
       "Given a Substitution that applies in the given bind the substitution should apply."
       [B testConcreteY testMetaY]
-      (applySubstitutionToBind (Sub testMetaX testConcreteY) (B testMetaX testMetaY))
+      (applySolEntryToBind (Sub testMetaX testConcreteY) (B testMetaX testMetaY))
   )
   
 noSubstitutionInBind =
@@ -66,7 +66,7 @@ noSubstitutionInBind =
     assertEqual
       "Given a Substitution that doesn't apply in the given bind no substitution should apply."
       [B testMetaY testMetaY]
-      (applySubstitutionToBind (Sub testMetaX testConcreteY) (B testMetaY testMetaY))
+      (applySolEntryToBind (Sub testMetaX testConcreteY) (B testMetaY testMetaY))
   )
 
 substitutionInChainVariable =
@@ -74,7 +74,7 @@ substitutionInChainVariable =
     assertEqual
       "Given a Substitution that applies in the given chain variable the substitution should apply."
       [CV "test" testConcreteY testMetaY]
-      (applySubstitutionToBind (Sub testMetaX testConcreteY) (CV "test" testMetaX testMetaY))
+      (applySolEntryToBind (Sub testMetaX testConcreteY) (CV "test" testMetaX testMetaY))
   )
 
 expansionInChainVariable =
@@ -82,7 +82,7 @@ expansionInChainVariable =
     assertEqual
       "Given an expantion that matches the given chain variable the expansion should happen."
       [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") (Meta "CVtest2"), B (Meta "CVtest2") testMetaY]
-      (applySubstitutionToBind (Exp "test" 3) (CV "test" testMetaX testMetaY))
+      (applySolEntryToBind (Exp "test" 3) (CV "test" testMetaX testMetaY))
   )
 
 noExpansionInChainVariable =
@@ -90,18 +90,18 @@ noExpansionInChainVariable =
     assertEqual
       "Given an expantion that does not matches the given chain variable the expansion should not happen."
       [CV "test2" testMetaX testMetaY]
-      (applySubstitutionToBind (Exp "test1" 3) (CV "test2" testMetaX testMetaY))
+      (applySolEntryToBind (Exp "test1" 3) (CV "test2" testMetaX testMetaY))
   )
 
 -----------------------------------
--- applySubstitutionToSide --------
+-- applySolEntryToSide --------
 -----------------------------------
 substitutionInVariable =
   TestCase (
     assertEqual
       "Given a Substitution that applies in the given side that is a variabe the substitution should apply."
       (V testConcreteY)
-      (applySubstitutionToSide (Sub testMetaX testConcreteY) (V testMetaX))
+      (applySolEntryToSide (Sub testMetaX testConcreteY) (V testMetaX))
   )
 
 noSubstitutionInVariable =
@@ -109,7 +109,7 @@ noSubstitutionInVariable =
     assertEqual
       "Given a Substitution that doesn't apply in the given side that is a variabe no substitution should apply."
       (V testMetaY)
-      (applySubstitutionToSide (Sub testMetaX testConcreteY) (V testMetaY))
+      (applySolEntryToSide (Sub testMetaX testConcreteY) (V testMetaY))
   )
 
 substitutionInBinds =
@@ -117,7 +117,7 @@ substitutionInBinds =
     assertEqual
       "Given a Substitution that applies in the given side that is a bind of size two the substitution should apply."
       (BL [(B testConcreteY testMetaY), (B testMetaY testConcreteY)])
-      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL [(B testMetaX testMetaY), (B testMetaY testMetaX)]))
+      (applySolEntryToSide (Sub testMetaX testConcreteY) (BL [(B testMetaX testMetaY), (B testMetaY testMetaX)]))
   )
 
 noSubstitutionInBinds =
@@ -125,7 +125,7 @@ noSubstitutionInBinds =
     assertEqual
       "Given a Substitution that doesn't apply in the given side that is a bind no substitution should apply."
       (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)])
-      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)]))
+      (applySolEntryToSide (Sub testMetaX testConcreteY) (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)]))
   )
   
 noSubstitutionWithEmptySet =
@@ -133,18 +133,18 @@ noSubstitutionWithEmptySet =
     assertEqual
       "Given an empty set no substitution should apply."
       (BL [])
-      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL []))
+      (applySolEntryToSide (Sub testMetaX testConcreteY) (BL []))
   )
   
 -----------------------------------
--- applySubstitutionToEquation ----
+-- applySolEntryToEquation ----
 -----------------------------------
 substitutionInEquation =
   TestCase (
     assertEqual
       "Given a Substitution that applies in the given equation the substitution should apply."
       (BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY])
-      (applySubstitutionToEquation (Sub testMetaX testConcreteY) (BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]))
+      (applySolEntryToEquation (Sub testMetaX testConcreteY) (BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]))
   )
   
 noSubstitutionInEquation =
@@ -152,11 +152,11 @@ noSubstitutionInEquation =
     assertEqual
       "Given a Substitution that doesn't apply in the given equation no substitution should apply."
       (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY])
-      (applySubstitutionToEquation (Sub testMetaX testConcreteY) (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]))
+      (applySolEntryToEquation (Sub testMetaX testConcreteY) (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]))
   )
 
 -----------------------------------	
--- applySubstitutionToGamma -------
+-- applySolEntryToGamma -----------
 -----------------------------------
 substitutionInGamma =
   TestCase (
@@ -164,7 +164,7 @@ substitutionInGamma =
       "Given a Substitution that applies in the given gamma the substitution should apply."
       [(BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY]), (V testConcreteY, V testVarX)]
       (
-        applySubstitutionToGamma 
+       applySolEntryToGamma 
           (Sub testMetaX testConcreteY) 
           [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]), (V testMetaX, V testVarX)]
       )
@@ -176,7 +176,7 @@ noSubstitutionInGamma =
       "Given a Substitution that doesn't apply in the given gamma no substitution should apply."
       [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
       (
-        applySubstitutionToGamma 
+       applySolEntryToGamma 
           (Sub testMetaX testConcreteY) 
           [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
       )
@@ -293,13 +293,13 @@ testsApplySubstitutionToMeta =
     , TestLabel "applySubstitutionToMeta_test5" noSubstitutionWithExpansion
   ]
 
-testsApplySubstitutionToBind =
+testsapplySolEntryToBind =
   TestList [
-    TestLabel "applySubstitutionToBind_test1" substitutionInBind
-    , TestLabel "applySubstitutionToBind_test2" noSubstitutionInBind
-    , TestLabel "applySubstitutionToBind_test3" substitutionInChainVariable
-    , TestLabel "applySubstitutionToBind_test4" expansionInChainVariable
-    , TestLabel "applySubstitutionToBind_test5" noExpansionInChainVariable
+    TestLabel "applySolEntryToBind_test1" substitutionInBind
+    , TestLabel "applySolEntryToBind_test2" noSubstitutionInBind
+    , TestLabel "applySolEntryToBind_test3" substitutionInChainVariable
+    , TestLabel "applySolEntryToBind_test4" expansionInChainVariable
+    , TestLabel "applySolEntryToBind_test5" noExpansionInChainVariable
   ]
 
 testsApplySubstitutionToSide =
@@ -352,10 +352,10 @@ testsExpandChainVariable =
 
 main = combineTests [
   (testsApplySubstitutionToMeta, "applySubstitutionToMeta")
-  , (testsApplySubstitutionToBind, "applySubstitutionToBind")
-  , (testsApplySubstitutionToSide, "applySubstitutionToSide")
-  , (testsApplySubstitutionToEquation, "applySubstitutionToEquation")
-  , (testsApplySubstitutionToGamma, "applySubstitutionToGamma")
+  , (testsapplySolEntryToBind, "applySolEntryToBind")
+  , (testsApplySubstitutionToSide, "applySolEntryToSide")
+  , (testsApplySubstitutionToEquation, "applySolEntryToEquation")
+  , (testsApplySubstitutionToGamma,  "applySolEntryToGamma")
   , (testsApplySolutionToGamma, "applySolutionToGamma")
   , (testsUnJust, "unJust")
   , (testsIsProblemSolved, "isProblemSolved")
