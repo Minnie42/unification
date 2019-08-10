@@ -5,27 +5,31 @@ maxChainVariableExpandSize :: Int
 maxChainVariableExpandSize = 3
 
 
-applySubstitutionToMeta :: (Var, Var) -> Var -> Var
-applySubstitutionToMeta (Meta x, subVar) (Meta var)
+applySubstitutionToMeta :: SolEntry -> Var -> Var
+applySubstitutionToMeta (Sub (Meta x) subVar) (Meta var)
   | var == x = subVar
   | otherwise = Meta var
 applySubstitutionToMeta _ var = var
 
-applySubstitutionToBind :: (Var, Var) -> Bind -> Bind
-applySubstitutionToBind substitution (B var1 var2) = 
-  B (applySubstitutionToMeta substitution var1) (applySubstitutionToMeta substitution var2)
-applySubstitutionToBind substitution (CV name var1 var2) =
-  CV name (applySubstitutionToMeta substitution var1) (applySubstitutionToMeta substitution var2) 
+applySubstitutionToBind :: SolEntry -> Bind -> [Bind]
+applySubstitutionToBind (Sub subVar1 subVar2) (B var1 var2) = 
+  [B (applySubstitutionToMeta (Sub subVar1 subVar2) var1) (applySubstitutionToMeta (Sub subVar1 subVar2) var2)]
+applySubstitutionToBind (Sub subVar1 subVar2) (CV name var1 var2) =
+  [CV name (applySubstitutionToMeta (Sub subVar1 subVar2) var1) (applySubstitutionToMeta (Sub subVar1 subVar2) var2)]
+applySubstitutionToBind (Exp expName expSize) (CV name startVar endVar)
+  | expName == name = expandChainVariable (CV name startVar endVar) expSize
+  | otherwise = [CV name startVar endVar]
+applySubstitutionToBind _ bind = [bind]
 
-applySubstitutionToSide :: (Var, Var) -> Side -> Side
+applySubstitutionToSide :: SolEntry -> Side -> Side
 applySubstitutionToSide substitution (V var) = V (applySubstitutionToMeta substitution var)
-applySubstitutionToSide substitution (BL binds) = BL (map (applySubstitutionToBind substitution) binds)
+applySubstitutionToSide substitution (BL binds) = BL (concat (map (applySubstitutionToBind substitution) binds))
 
-applySubstitutionToEquation :: (Var, Var) -> Equation -> Equation
+applySubstitutionToEquation :: SolEntry -> Equation -> Equation
 applySubstitutionToEquation substitution (side1, side2) = 
   (applySubstitutionToSide substitution side1, applySubstitutionToSide substitution side2)
 
-applySubstitutionToGamma :: (Var, Var) -> Problem -> Problem
+applySubstitutionToGamma :: SolEntry -> Problem -> Problem
 applySubstitutionToGamma substitution gamma = map (applySubstitutionToEquation substitution) gamma
 
 applySolutionToGamma :: Sol -> Problem -> Problem
@@ -51,29 +55,3 @@ expandChainVariableReverse (CV name startVar endVar) expandSize =
   :(expandChainVariableReverse (CV name startVar newEndVar) (expandSize - 1))
   where
     newEndVar = Meta ("CV" ++ name ++ (show (expandSize - 1)))
-
-expandAllChainVariablesInGamma :: Problem -> [Problem]
-expandAllChainVariablesInGamma gamma = undefined
-  
-expandAllChainVariablesInGammaIterate :: Problem -> Problem -> [Problem]
-expandAllChainVariablesInGammaIterate pendingEquations doneEquations = undefined
-  
-expandChainVariablesInBinds :: [Bind] -> [[Bind]]
-expandChainVariablesInBinds [] = [[]]
-expandChainVariablesInBinds ((B var1 var2):binds) = map ((B var1 var2):) (expandChainVariablesInBinds binds)
-expandChainVariablesInBinds ((CV name var1 var2):binds) = 
-  foldl (++) [] [map ((expandChainVariable (CV name var1 var2) expandSize)++) (expandChainVariablesInBinds binds) | expandSize <- [1..maxChainVariableExpandSize]]
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -14,7 +14,7 @@ substituteMetaToConcrete =
       "Substitute a meta variable with a substitution that starts with this meta variable and ends\
       \ with a concrete variable should return this concrete variable."
       testConcreteX
-      (applySubstitutionToMeta (testMetaX, testConcreteX) testMetaX)
+      (applySubstitutionToMeta (Sub testMetaX testConcreteX) testMetaX)
   )
 
 substituteMetaToMeta =
@@ -23,7 +23,7 @@ substituteMetaToMeta =
       "Substitute a meta variable with a substitution that starts with this meta variable and ends\
       \ with another meta variable should return the second meta variable."
       testMetaY
-      (applySubstitutionToMeta (testMetaX, testMetaY) testMetaX)
+      (applySubstitutionToMeta (Sub testMetaX testMetaY) testMetaX)
   )
 
 twoDifferentMetasNoSubstitution =
@@ -31,7 +31,7 @@ twoDifferentMetasNoSubstitution =
     assertEqual
       "If the left side of the substitution doesn't match the variable no substitution should happen."
       testMetaY
-      (applySubstitutionToMeta (testMetaX, testVar) testMetaY)
+      (applySubstitutionToMeta (Sub testMetaX testVar) testMetaY)
   )
 
 concreteNoSubstitution =
@@ -39,7 +39,15 @@ concreteNoSubstitution =
     assertEqual
       "If we get a concrete as variable to be substituted no substitution should happen."
       testConcreteX
-      (applySubstitutionToMeta (testMeta, testVar) testConcreteX)
+      (applySubstitutionToMeta (Sub testMeta testVar) testConcreteX)
+  )
+
+noSubstitutionWithExpansion =
+  TestCase (
+    assertEqual
+      "Given an expansion no substitution should happen."
+      testVarX
+      (applySubstitutionToMeta (Exp "test" 3) testVarX)
   )
 
 -----------------------------------
@@ -49,24 +57,40 @@ substitutionInBind =
   TestCase (
     assertEqual
       "Given a Substitution that applies in the given bind the substitution should apply."
-      (B testConcreteY testMetaY)
-      (applySubstitutionToBind (testMetaX, testConcreteY) (B testMetaX testMetaY))
+      [B testConcreteY testMetaY]
+      (applySubstitutionToBind (Sub testMetaX testConcreteY) (B testMetaX testMetaY))
   )
   
 noSubstitutionInBind =
   TestCase (
     assertEqual
       "Given a Substitution that doesn't apply in the given bind no substitution should apply."
-      (B testMetaY testMetaY)
-      (applySubstitutionToBind (testMetaX, testConcreteY) (B testMetaY testMetaY))
+      [B testMetaY testMetaY]
+      (applySubstitutionToBind (Sub testMetaX testConcreteY) (B testMetaY testMetaY))
   )
 
 substitutionInChainVariable =
   TestCase (
     assertEqual
       "Given a Substitution that applies in the given chain variable the substitution should apply."
-      (CV "test" testConcreteY testMetaY)
-      (applySubstitutionToBind (testMetaX, testConcreteY) (CV "test" testMetaX testMetaY))
+      [CV "test" testConcreteY testMetaY]
+      (applySubstitutionToBind (Sub testMetaX testConcreteY) (CV "test" testMetaX testMetaY))
+  )
+
+expansionInChainVariable =
+  TestCase (
+    assertEqual
+      "Given an expantion that matches the given chain variable the expansion should happen."
+      [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") (Meta "CVtest2"), B (Meta "CVtest2") testMetaY]
+      (applySubstitutionToBind (Exp "test" 3) (CV "test" testMetaX testMetaY))
+  )
+
+noExpansionInChainVariable =
+  TestCase (
+    assertEqual
+      "Given an expantion that does not matches the given chain variable the expansion should not happen."
+      [CV "test2" testMetaX testMetaY]
+      (applySubstitutionToBind (Exp "test1" 3) (CV "test2" testMetaX testMetaY))
   )
 
 -----------------------------------
@@ -77,7 +101,7 @@ substitutionInVariable =
     assertEqual
       "Given a Substitution that applies in the given side that is a variabe the substitution should apply."
       (V testConcreteY)
-      (applySubstitutionToSide (testMetaX, testConcreteY) (V testMetaX))
+      (applySubstitutionToSide (Sub testMetaX testConcreteY) (V testMetaX))
   )
 
 noSubstitutionInVariable =
@@ -85,7 +109,7 @@ noSubstitutionInVariable =
     assertEqual
       "Given a Substitution that doesn't apply in the given side that is a variabe no substitution should apply."
       (V testMetaY)
-      (applySubstitutionToSide (testMetaX, testConcreteY) (V testMetaY))
+      (applySubstitutionToSide (Sub testMetaX testConcreteY) (V testMetaY))
   )
 
 substitutionInBinds =
@@ -93,7 +117,7 @@ substitutionInBinds =
     assertEqual
       "Given a Substitution that applies in the given side that is a bind of size two the substitution should apply."
       (BL [(B testConcreteY testMetaY), (B testMetaY testConcreteY)])
-      (applySubstitutionToSide (testMetaX, testConcreteY) (BL [(B testMetaX testMetaY), (B testMetaY testMetaX)]))
+      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL [(B testMetaX testMetaY), (B testMetaY testMetaX)]))
   )
 
 noSubstitutionInBinds =
@@ -101,7 +125,7 @@ noSubstitutionInBinds =
     assertEqual
       "Given a Substitution that doesn't apply in the given side that is a bind no substitution should apply."
       (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)])
-      (applySubstitutionToSide (testMetaX, testConcreteY) (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)]))
+      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL [(B testMetaY testMetaY), (B testMetaY testMetaY)]))
   )
   
 noSubstitutionWithEmptySet =
@@ -109,7 +133,7 @@ noSubstitutionWithEmptySet =
     assertEqual
       "Given an empty set no substitution should apply."
       (BL [])
-      (applySubstitutionToSide (testMetaX, testConcreteY) (BL []))
+      (applySubstitutionToSide (Sub testMetaX testConcreteY) (BL []))
   )
   
 -----------------------------------
@@ -120,7 +144,7 @@ substitutionInEquation =
     assertEqual
       "Given a Substitution that applies in the given equation the substitution should apply."
       (BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY])
-      (applySubstitutionToEquation (testMetaX, testConcreteY) (BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]))
+      (applySubstitutionToEquation (Sub testMetaX testConcreteY) (BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]))
   )
   
 noSubstitutionInEquation =
@@ -128,7 +152,7 @@ noSubstitutionInEquation =
     assertEqual
       "Given a Substitution that doesn't apply in the given equation no substitution should apply."
       (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY])
-      (applySubstitutionToEquation (testMetaX, testConcreteY) (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]))
+      (applySubstitutionToEquation (Sub testMetaX testConcreteY) (BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]))
   )
 
 -----------------------------------	
@@ -141,7 +165,7 @@ substitutionInGamma =
       [(BL [B testConcreteY testMetaY], BL [B testMetaY testConcreteY]), (V testConcreteY, V testVarX)]
       (
         applySubstitutionToGamma 
-          (testMetaX, testConcreteY) 
+          (Sub testMetaX testConcreteY) 
           [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaX]), (V testMetaX, V testVarX)]
       )
   )
@@ -153,7 +177,7 @@ noSubstitutionInGamma =
       [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
       (
         applySubstitutionToGamma 
-          (testMetaX, testConcreteY) 
+          (Sub testMetaX testConcreteY) 
           [(BL [B testMetaY testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testVarX)]
       )
   )
@@ -180,7 +204,7 @@ solutionWithTwoIndependentSubstitutions =
       [(BL [B testConcreteX testConcreteY], BL [B testConcreteY testConcreteY]), (V testConcreteY, V testConcreteX)]
       (
         applySolutionToGamma 
-          [(testMetaX, testConcreteX), (testMetaY, testConcreteY)] 
+          [(Sub testMetaX testConcreteX), (Sub testMetaY testConcreteY)] 
           [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testMetaX)]
       )
   )
@@ -193,7 +217,7 @@ solutionWithTwoDependentSubstitutions =
       [(BL [B testConcreteY testConcreteY], BL [B testConcreteY testConcreteY]), (V testConcreteY, V testConcreteY)]
       (
         applySolutionToGamma 
-          [(testMetaY, testConcreteY), (testMetaX, testMetaY)] 
+          [(Sub testMetaY testConcreteY), (Sub testMetaX testMetaY)] 
           [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testMetaX)]
       )
   )
@@ -257,30 +281,6 @@ chainVariableThatNotExpands =
       (expandChainVariable (CV "A" testMetaX testMetaY) 1)
   )
 
------------------------------------
--- expandChainVariablesInBinds ----
------------------------------------
-noExpansion =
-  TestCase (
-    assertEqual
-      "."
-      [[testBindA, testBindB]]
-      (expandChainVariablesInBinds [testBindA, testBindB])
-  )
-
-oneExpansion =
-  TestCase (
-    assertEqual
-      "."
-      [
-        [B testMetaX testMetaY, testBindB]
-      , [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") testMetaY, testBindB]
-      , [B testMetaX (Meta "CVtest1"), B (Meta "CVtest1") (Meta "CVtest2"), B (Meta "CVtest2") testMetaY, testBindB]
-      ]
-      (take 3 (expandChainVariablesInBinds [CV "test" testMetaX testMetaY, testBindB]))
-  )
-
-
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -290,6 +290,7 @@ testsApplySubstitutionToMeta =
     , TestLabel "applySubstitutionToMeta_test2" substituteMetaToMeta
     , TestLabel "applySubstitutionToMeta_test3" twoDifferentMetasNoSubstitution
     , TestLabel "applySubstitutionToMeta_test4" concreteNoSubstitution
+    , TestLabel "applySubstitutionToMeta_test5" noSubstitutionWithExpansion
   ]
 
 testsApplySubstitutionToBind =
@@ -297,6 +298,8 @@ testsApplySubstitutionToBind =
     TestLabel "applySubstitutionToBind_test1" substitutionInBind
     , TestLabel "applySubstitutionToBind_test2" noSubstitutionInBind
     , TestLabel "applySubstitutionToBind_test3" substitutionInChainVariable
+    , TestLabel "applySubstitutionToBind_test4" expansionInChainVariable
+    , TestLabel "applySubstitutionToBind_test5" noExpansionInChainVariable
   ]
 
 testsApplySubstitutionToSide =
@@ -347,12 +350,6 @@ testsExpandChainVariable =
     , TestLabel "expandChainVariable_test2" chainVariableThatNotExpands
   ]
 
-testsExpandChainVariablesInBinds =
-  TestList [
-    TestLabel "expandChainVariablesInBinds_test1" noExpansion
-    , TestLabel "expandChainVariablesInBinds_test2" oneExpansion
-  ]
-
 main = combineTests [
   (testsApplySubstitutionToMeta, "applySubstitutionToMeta")
   , (testsApplySubstitutionToBind, "applySubstitutionToBind")
@@ -363,6 +360,5 @@ main = combineTests [
   , (testsUnJust, "unJust")
   , (testsIsProblemSolved, "isProblemSolved")
   , (testsExpandChainVariable, "expandChainVariable")
-  , (testsExpandChainVariablesInBinds, "expandChainVariablesInBinds")
   ]
  
