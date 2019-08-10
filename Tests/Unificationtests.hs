@@ -1,6 +1,7 @@
 import Test.HUnit
 import Test.Stats
 import Types
+import Util
 import Unification
 import Tests.DummyVariables
 
@@ -85,6 +86,16 @@ chainVariableOneInvalidBranches =
       (unification [(BL [CV "test" testMetaX testMetaY], BL [B testConcreteX testMetaZ, B testMetaX testConcreteY])])
   )
 
+validSolutionsForChainVariables =
+  TestCase (
+    assertEqual
+      "All calculated solutions should solve the problem."
+      True
+      (foldl (&&) True (map (\sol -> isProblemSolved (applySolutionToGamma sol problem)) (unification problem)))
+  )
+  where
+    problem = [(BL [CV "S" testMetaX testMetaY, CV "T" testMetaW testMetaZ, CV "U" testMetaA testMetaB, CV "V" testMetaW testMetaY, CV "V" testMetaW testMetaZ, CV "V" testMetaX testMetaY], BL [CV "Y" testMetaX testMetaW, CV "Z" testMetaA testMetaB])]
+ 
 testsUnification =
   TestList [
     TestLabel "unification_test1" twoIndependentEquations
@@ -96,6 +107,7 @@ testsUnification =
     , TestLabel "unification_test7" twoBrachchesOneInvalid
     , TestLabel "unification_test8" chainVariableTwoValidBranches
     , TestLabel "unification_test9" chainVariableOneInvalidBranches
+    , TestLabel "unification_test10" validSolutionsForChainVariables
   ]
 
 main = combineTests [

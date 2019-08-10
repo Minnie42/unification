@@ -31,6 +31,15 @@ testMetaY = Meta "MetaY"
 testMetaZ :: Var
 testMetaZ = Meta "MetaZ"
 
+testMetaA :: Var
+testMetaA = Meta "MetaA"
+
+testMetaB :: Var
+testMetaB = Meta "MetaB"
+
+testMetaW :: Var
+testMetaW = Meta "MetaW"
+
 testBind :: Bind
 testBind = B testVar testVar
 
