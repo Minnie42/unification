@@ -222,19 +222,6 @@ solutionWithTwoDependentSubstitutions =
       )
   )
 
-solutionWithTwoDependentSubstitutions =
-  TestCase (
-    assertEqual
-      "Given a Solution with two dependent substitutions should apply the first substitutions correctly and the second\
-      \ correctly considering the previous changes."
-      [(BL [B testConcreteY testConcreteY], BL [B testConcreteY testConcreteY]), (V testConcreteY, V testConcreteY)]
-      (
-        applySolutionToGamma 
-          [(Sub testMetaY testConcreteY), (Sub testMetaX testMetaY)] 
-          [(BL [B testMetaX testMetaY], BL [B testMetaY testMetaY]), (V testMetaY, V testMetaX)]
-      )
-  )
-
 -----------------------------------
 -- unJust -------------------------
 -----------------------------------

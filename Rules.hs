@@ -70,23 +70,28 @@ rule10 :: Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
 rule10 sol ((BL ((CV name var1 var2):leftBinds), BL rightBinds):gamma) = 
   Just [
     (
-      Just ((Exp name expandSize):sol)
+      Just ((solEntry expandSize):sol)
     , (
-        BL ((expandChainVariable (CV name var1 var2) expandSize) ++ leftBinds)
-      , BL rightBinds
-      ):(applySolEntryToGamma (Exp name expandSize) gamma)
+        applySolEntryToSide (solEntry expandSize) (BL ((CV name var1 var2):leftBinds))
+      , applySolEntryToSide (solEntry expandSize) (BL rightBinds)
+      ):(applySolEntryToGamma (solEntry expandSize) gamma)
     ) | expandSize <- [1..maxChainVariableExpandSize]
   ] 
+  where
+    solEntry expandSize = (Exp name expandSize)
 rule10 sol _ = Nothing
 
 rule11 :: Sol -> Problem -> Maybe [(Maybe Sol, Problem)]
 rule11 sol ((BL leftBinds, BL ((CV name var1 var2):rightBinds)):gamma) = 
   Just [
     (
-      Just ((Exp name expandSize):sol)
+      Just ((solEntry expandSize):sol)
     , (
-        BL leftBinds
-      , BL ((expandChainVariable (CV name var1 var2) expandSize) ++ rightBinds)
-      ):(applySolEntryToGamma (Exp name expandSize) gamma)
-    ) | expandSize <- [1..maxChainVariableExpandSize]] 
+        applySolEntryToSide (solEntry expandSize) (BL leftBinds)
+      , applySolEntryToSide (solEntry expandSize) (BL ((CV name var1 var2):rightBinds))
+      ):(applySolEntryToGamma (solEntry expandSize) gamma)
+    ) | expandSize <- [1..maxChainVariableExpandSize]
+  ] 
+  where
+    solEntry expandSize = (Exp name expandSize)
 rule11 sol _ = Nothing

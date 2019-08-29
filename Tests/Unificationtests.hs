@@ -95,7 +95,16 @@ validSolutionsForChainVariables =
   )
   where
     problem = [(BL [CV "S" testMetaX testMetaY, CV "T" testMetaW testMetaZ, CV "U" testMetaA testMetaB, CV "V" testMetaW testMetaY, CV "V" testMetaW testMetaZ, CV "V" testMetaX testMetaY], BL [CV "Y" testMetaX testMetaW, CV "Z" testMetaA testMetaB])]
- 
+
+twoIdenticalChainVariablesWithAditionalBindOnOneSide =
+  TestCase (
+    assertEqual
+      "Two identical chain variables on each side of the equation with an different amount of additional bindings on each side should resolve to no solution."
+      []
+      (unification [(BL [CV "S" testMetaX testMetaY, B testVar testVar], BL [CV "S" testMetaX testMetaY])])
+  )
+
+
 testsUnification =
   TestList [
     TestLabel "unification_test1" twoIndependentEquations
@@ -108,6 +117,7 @@ testsUnification =
     , TestLabel "unification_test8" chainVariableTwoValidBranches
     , TestLabel "unification_test9" chainVariableOneInvalidBranches
     , TestLabel "unification_test10" validSolutionsForChainVariables
+    , TestLabel "unification_test11" twoIdenticalChainVariablesWithAditionalBindOnOneSide
   ]
 
 main = combineTests [
