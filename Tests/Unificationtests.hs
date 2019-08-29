@@ -104,6 +104,14 @@ twoIdenticalChainVariablesWithAditionalBindOnOneSide =
       (unification [(BL [CV "S" testMetaX testMetaY, B testVar testVar], BL [CV "S" testMetaX testMetaY])])
   )
 
+twoIdenticalChainVariablesWithConcreteVariables =
+  TestCase (
+    assertEqual
+      "Two identical chain variables with concrete variables on each side should resolve to 6 solutions."
+      6
+      (length (unification [(BL [CV "S" testConcreteX testConcreteY], BL [CV "S" testConcreteX testConcreteY])]))
+  )
+
 
 testsUnification =
   TestList [
@@ -118,6 +126,7 @@ testsUnification =
     , TestLabel "unification_test9" chainVariableOneInvalidBranches
     , TestLabel "unification_test10" validSolutionsForChainVariables
     , TestLabel "unification_test11" twoIdenticalChainVariablesWithAditionalBindOnOneSide
+    , TestLabel "unification_test12" twoIdenticalChainVariablesWithConcreteVariables
   ]
 
 main = combineTests [
