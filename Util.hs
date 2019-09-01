@@ -66,3 +66,25 @@ expandChainVariableReverse
   where
     newEndVar = 
       Meta ("CV" ++ name ++ (show (expandSize - 1)))
+
+compareEquations :: Equation -> Equation -> Ordering
+compareEquations eq1 eq2 = prio eq1 `compare` prio eq2 
+  where
+    prio (BL [], _) = (-2, 0)
+    prio (_, BL []) = (-2, 0)
+    prio (V _, _) = (-1, 0)
+    prio (_, V _) = (-1, 0)
+    prio (BL binds1, BL binds2) = (countChainVariablesInEquation (BL binds1, BL binds2), (length binds1) + (length binds2))
+
+countChainVariablesInBind :: [Bind] -> Integer
+countChainVariablesInBind binds = sum (map (\bind -> if isChainVariable bind then 1 else 0) binds)
+
+countChainVariablesInEquation :: Equation -> Integer
+countChainVariablesInEquation (BL bind1, BL bind2) = (countChainVariablesInBind bind1) + (countChainVariablesInBind bind2)
+countChainVariablesInEquation (BL bind, _) = countChainVariablesInBind bind
+countChainVariablesInEquation (_, BL bind) = countChainVariablesInBind bind
+countChainVariablesInEquation _ = 0
+
+isChainVariable :: Bind -> Bool
+isChainVariable (CV _ _ _) = True
+isChainVariable _ = False
