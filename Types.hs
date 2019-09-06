@@ -9,12 +9,17 @@ instance Show Bind where
 instance Ord Bind where
   compare (B _ _) (CV _ _ _) = LT
   compare (CV _ _ _) (B _ _) = GT
-  compare bind1 bind2 = countMeta bind1 `compare` countMeta bind2
+  compare bind1 bind2 = 
+    countMeta bind1 `compare` countMeta bind2
     where 
       isMeta (Meta _) = True
       isMeta _ = False 
-      countMeta (B var1 var2) = (if isMeta var1 then 1 else 0) + (if isMeta var2 then 1 else 0)
-      countMeta (CV _ var1 var2) = (if isMeta var1 then 1 else 0) + (if isMeta var2 then 1 else 0)
+      countMeta (B var1 var2) = 
+        (if isMeta var1 then 1 else 0) 
+        + (if isMeta var2 then 1 else 0)
+      countMeta (CV _ var1 var2) = 
+        (if isMeta var1 then 1 else 0) 
+        + (if isMeta var2 then 1 else 0)
 
 data Var = Concrete String | Meta String deriving(Eq)
 instance Show Var where

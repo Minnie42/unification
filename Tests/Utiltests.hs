@@ -262,6 +262,14 @@ emptyProblem =
       (isProblemSolved [])
   )
 
+unsolvedProblemWithBindsThatAreConsideredEqual =
+  TestCase (
+    assertEqual
+      "A problem with different sides should always be considered unsolved, even if the binds of each side are considered equal by their ord instance."
+      False
+      (isProblemSolved [(BL [B testMetaX testMetaY], BL [B testMetaA testMetaB])])
+  )
+
 -----------------------------------
 -- expandChainVariable ------------
 -----------------------------------
@@ -342,6 +350,7 @@ testsIsProblemSolved =
     TestLabel "isProblemSolved_test1" solvedProblem
     , TestLabel "isProblemSolved_test2" unsolvedProblem
     , TestLabel "isProblemSolved_test3" emptyProblem
+    , TestLabel "isProblemSolved_test4" unsolvedProblemWithBindsThatAreConsideredEqual
   ]
 
 testsExpandChainVariable =

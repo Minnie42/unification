@@ -3,6 +3,7 @@ import Test.Stats
 import Types
 import Tests.DummyVariables
 import Util
+import Data.List
 
 compareBindWithCV = 
   TestCase (
@@ -19,7 +20,6 @@ compareCVWithBind =
       GT
       (testCV `compare` testBind)
   )
-
 
 compareBindWithBindLeftGreater  = 
   TestCase (
@@ -140,6 +140,15 @@ compareTwoEquationsOfDiffentSizeSmallerOneWithChainVariables =
       LT
       ((BL [testBind, testBind, testBind], BL [testBind, testBind])`compareEquations` (BL [CV "test1" testVar testVar, testBind], BL [CV "test2" testVar testVar, testBind]))
   )  
+
+sortThreeEquations =
+  TestCase (
+    assertEqual
+      "Equations should be sorted correctly."
+      [(BL [], BL [testBind]), (V testVarX, V testVarY), (BL [CV "test" testVarX testVarY], BL [testBind])]
+      (sortBy compareEquations [(BL [CV "test" testVarX testVarY], BL [testBind]), (BL [], BL [testBind]), (V testVarX, V testVarY)])
+  ) 
+
 -------------------------------
 -- Tests ----------------------
 -------------------------------
@@ -166,6 +175,7 @@ testsEquation =
     , TestLabel "equation_test7" compareTwoEquationsOfSameSizeOneWithChainVariables
     , TestLabel "equation_test8" compareTwoEquationsOfSameSizeBothWithChainVariables
     , TestLabel "equation_test9" compareTwoEquationsOfDiffentSizeSmallerOneWithChainVariables
+    , TestLabel "equation_test10" sortThreeEquations
   ]
 
 main = combineTests [

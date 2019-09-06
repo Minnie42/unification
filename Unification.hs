@@ -2,12 +2,13 @@ module Unification where
 import Rules
 import Types
 import Util
+import Data.List
 
 startRule :: Int
 startRule = 3
 
 unification  :: Problem -> [Sol]
-unification gamma = recursiveUnification [((Just []), gamma)] [] startRule
+unification gamma = recursiveUnification [((Just []), sortBy compareEquations (sortBindsInGamma gamma))] [] startRule
 
 recursiveUnification :: [(Maybe Sol, Problem)] -> [Sol] -> Int -> [Sol]
 recursiveUnification ((Nothing, _):problems) sols _ = recursiveUnification problems sols startRule

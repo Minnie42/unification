@@ -1,5 +1,6 @@
 module Util where
 import Types
+import Data.List
 
 maxChainVariableExpandSize :: Int
 maxChainVariableExpandSize = 3
@@ -74,7 +75,11 @@ compareEquations eq1 eq2 = prio eq1 `compare` prio eq2
     prio (_, BL []) = (-2, 0)
     prio (V _, _) = (-1, 0)
     prio (_, V _) = (-1, 0)
-    prio (BL binds1, BL binds2) = (countChainVariablesInEquation (BL binds1, BL binds2), (length binds1) + (length binds2))
+    prio (BL binds1, BL binds2) = 
+      (
+        countChainVariablesInEquation (BL binds1, BL binds2), 
+        min (length binds1) (length binds2)
+      )
 
 countChainVariablesInBind :: [Bind] -> Integer
 countChainVariablesInBind binds = sum (map (\bind -> if isChainVariable bind then 1 else 0) binds)
@@ -88,3 +93,13 @@ countChainVariablesInEquation _ = 0
 isChainVariable :: Bind -> Bool
 isChainVariable (CV _ _ _) = True
 isChainVariable _ = False
+
+sortBindsInGamma :: Problem -> Problem
+sortBindsInGamma problem = map sortBindsInEquation problem
+
+sortBindsInEquation :: Equation -> Equation
+sortBindsInEquation (side1, side2) = (sortBindsInSide side1, sortBindsInSide side2)
+
+sortBindsInSide :: Side -> Side
+sortBindsInSide (BL binds) = BL (sort binds)
+sortBindsInSide side = side
